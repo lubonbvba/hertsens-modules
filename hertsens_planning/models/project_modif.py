@@ -20,6 +20,12 @@ class project(models.Model):
                                               " * In use/red, performing a ride\n"
                                               " * Available/green: Free for dispatch",
                                          required=False, copy=False, default='normal')
+
+	@api.one	
+	def write(self, vals=None):
+		#pdb.set_trace()
+		super(project,self).write(vals)
+
         
 class task(models.Model):
 	_inherit="project.task"
@@ -27,14 +33,31 @@ class task(models.Model):
 
 	@api.one	
 	def write(self, vals=None):
-		# if 'stage_id' in vals:
-		# 	new_stage=vals['stage_id']
-		# 	if new_stage=self.env['ir.model.data'].xmlid_lookup('hertsens_planning.project_tt_exception')[3]:
-		# 		#new state=exception
-		# 	if new_stage=self.env['ir.model.data'].xmlid_lookup('hertsens_planning.project_tt_assigned')[3]:
-		# 		#new state=assigned
-		# 	if new_stage=self.env['ir.model.data'].xmlid_lookup('hertsens_planning.project_tt_accepted')[3]:
-		# 		#new state=accepted
 
+		if 'stage_id' in vals:
+		 	new_stage=vals['stage_id']
+		 	if new_stage==self.env['ir.model.data'].xmlid_lookup('project.project_tt_deployment')[2]:
+		 		#new state=Ready
+		 		self.end_ride()		 	
+		 	#if new_stage=self.env['ir.model.data'].xmlid_lookup('hertsens_planning.project_tt_exception')[3]:
+	
+		#project.project_tt_deployment
+		#project.project_tt_cancel
 		super(task,self).write(vals)
+
+	@api.one
+	def end_ride(self):
+#		pdb.set_trace()		#process end of ride
+		#update ride      
+		self.ride_id.write({
+			'finished':True,
+			'state':'waiting',
+			})
+		#change vehicle status only if 1 ride assigned
+		if self.project_id.task_count == 1:
+			self.project_id.write({
+				'kanban_state': 'done',
+				'origin': '',
+				#'destination': '',
+				})
 

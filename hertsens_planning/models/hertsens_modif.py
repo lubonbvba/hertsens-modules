@@ -26,6 +26,7 @@ class hertsens_rit(models.Model):
 			'ride_id':self.id,
 #			'name': self.name_get(),
 			'vehicle_type_id': self.vehicle_type_id.id,
+			'partner_id': self.partner_id.id,
 			})
 
 		return {
@@ -40,3 +41,5 @@ class hertsens_rit(models.Model):
                 'target': 'new',
 #                'nodestroy': True,
             }
+
+

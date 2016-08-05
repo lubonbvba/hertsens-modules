@@ -6,7 +6,7 @@
 			<field name="model">hertsens.rit</field>
 			<field name="inherit_id" ref="hertsens_base.ritten_tree_view"/>
 			<field name="arch" type="xml">
-				<field name="state" position="after">
+				<field name="ritprijs" position="after">
 					<field name="vehicle_type_id" />
 				</field>
 

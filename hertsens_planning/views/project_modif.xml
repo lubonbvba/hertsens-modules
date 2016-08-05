@@ -6,7 +6,7 @@
 			<field name="name">hertsens.project.rit.tree</field>
 			<field name="model">hertsens.rit</field>
 			<field name="arch" type="xml">
-				<tree string="Rides to dispatch">
+				<tree string="Rides to dispatch" default_order="datum">
 					<field name="datum"/>
 					<field name="vertrek"/>
 					<field name="bestemming"/>

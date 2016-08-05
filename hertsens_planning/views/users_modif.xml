@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="users_modif_form">
+			<field name="name">users.modif.form</field>
+			<field name="model">res.users</field>
+			<field name="inherit_id" ref="base.view_users_form"/>
+			<field name="arch" type="xml">
+				<page string="Preferences" position="after">
+					<page string="Hertsens">
+						<group>
+							<field name="is_driver" />
+							<field name="project_id" />
+							<field name="employee_ids" />
+						</group>
+					</page>
+				</page>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="users_modif_simple_form">
+			<field name="name">users.modif.simple.form</field>
+			<field name="model">res.users</field>
+			<field name="inherit_id" ref="base.view_users_simple_form"/>
+			<field name="arch" type="xml">
+				<field name="fax" position="after">
+							<field name="is_driver" />
+
+
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>

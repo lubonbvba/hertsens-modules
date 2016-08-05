@@ -9,6 +9,7 @@
 					<group>
 						<group>
 							<field name="id" />
+							<field name="partner_id" readonly="True"/>
 							<field name="ride_id" readonly="True" context="{'detailed':1}"/>
 							<field name="vehicle_type_id" readonly="True"/>
 						</group>
@@ -20,19 +21,20 @@
 					</group>
 					<notebook>
 						<page string="Vehicles">
-							<field name="planning_vehicles_ids">
-								<tree>
+							<field name="planning_vehicles_ids" readonly="True">
+								<tree editable="top">
 									<field name="name"/>
 									<field name="vehicle_type_id"/>
+									<field name="driver_id"/>
 									<field name="kanban_state" widget="kanban_state_selection"/>
 									<button name="select_candidate" string="Select" type="object"/>
 								</tree>
 							</field>
 						</page>
 					</notebook>
-				<footer>
-					<button special="cancel" string="Cancel"/>
-				</footer>
+					<footer>
+						<button special="cancel" string="Cancel"/>
+					</footer>
 				</form>
 			</field>
 		</record>
@@ -42,11 +44,17 @@
 			<field name="arch" type="xml">
 				<form string="Vehicle selection">
 					<group>
-						<group>
-							<field name="ride_id" readonly="True" context="{'detailed':1}"/>
-							<field name="project_id" readonly="True" context="{'detailed':1}"/>
-							<field name="driver_id" />
-						</group>
+						
+							<group>
+								<field name="ride_id" readonly="True" context="{'detailed':1}"/>
+								<field name="project_id" readonly="True" context="{'detailed':1}"/>
+								<field name="driver_id" domain="[('is_driver','=',True)]"/>
+								<field name="driver_mobile" />
+							</group>
+							<group>
+								<field name="partner_id" readonly="True"/>
+							</group>
+						
 					</group>
 					<group>
 						<field name="dispatch_message" />

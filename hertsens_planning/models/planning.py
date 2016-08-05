@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api
+from openerp import models, fields, api,_
+
 import pdb
 
 
 class vehicle_planning_wizard(models.TransientModel):
 	_name="vehicle.planning.wizard"
 	ride_id=fields.Many2one('hertsens.rit')
-	project_id=fields.Many2one('project.project')
+	project_id=fields.Many2one('project.project', string="Vehicle")
+	partner_id=fields.Many2one('res.partner')
 	task_id=fields.Many2many('project.task')
 	driver_id=fields.Many2one('res.users')
 	name=fields.Char()
-	dispatch_message=fields.Char()
+	dispatch_message=fields.Text()
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type')
 	show_type_only=fields.Boolean(help="Show only vehicles of this type", default=True)
 	show_free_only=fields.Boolean(help="Show only free vehicles", default=True)
@@ -27,11 +29,11 @@ class vehicle_planning_wizard(models.TransientModel):
 
 
 	@api.multi
-#	@api.onchange('show_type_only')
+	@api.depends('show_type_only','show_free_only')
 	def set_candidates(self):
 		for candidate in self.planning_vehicles_ids:
 			candidate.unlink()
-		candidates=self.env['project.project'].search(['|',('vehicle_type_id','=',self.vehicle_type_id.id),('false',"=",self.show_type_only)])	
+		candidates=self.env['project.project'].search(['&','|',('vehicle_type_id','=',self.vehicle_type_id.id),('false',"=",self.show_type_only),'|',('kanban_state','=','done'),('false',"=",self.show_free_only)])	
 		self.env['planning.vehicles'].new_candidates(self,candidates)	
 		return {
                 'name': 'Dispatch Wizard',
@@ -55,7 +57,10 @@ class planning_vehicles(models.TransientModel):
 	vehicle_planning_wizard_id=fields.Many2one("vehicle.planning.wizard")
 	name=fields.Char()
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type')
-	project_id=fields.Many2one('project.project')	
+	project_id=fields.Many2one('project.project')
+	partner_id=fields.Many2one('res.partner')
+	
+	driver_id=fields.Many2one('res.users')	
 	kanban_state=fields.Selection([('normal', 'tbd'),('blocked', 'In Use'),('done', 'Available')], 'Kanban State',
                                          track_visibility='onchange',
                                          help="A task's kanban state indicates special situations affecting it:\n"
@@ -74,16 +79,19 @@ class planning_vehicles(models.TransientModel):
 				'vehicle_type_id': candidate.vehicle_type_id.id,
 				'vehicle_planning_wizard_id':wizard.id,
 				'project_id':candidate.id,
+				'driver_id':candidate.driver_id.id,
 			})
 
 	@api.multi
 	def select_candidate(self):
-		#pdb.set_trace()
 		dispatch_wizard=self.env['vehicle.dispatch.wizard'].create({
 			'ride_id': self.vehicle_planning_wizard_id.ride_id.id,
 			'project_id': self.project_id.id,
-			'driver_id': self.project_id.driver_id.id
+			'driver_id': self.project_id.driver_id.id,
+			'dispatch_message': "V: %s\nVan: %s\nNaar: %s\nOK?" % (self.project_id.name, self.vehicle_planning_wizard_id.ride_id.vertrek,self.vehicle_planning_wizard_id.ride_id.bestemming),
 			})
+		dispatch_wizard.driver_mobile=str(self.project_id.driver_id.employee_ids.mobile_phone)
+		dispatch_wizard.partner_id=dispatch_wizard.ride_id.partner_id
 		return {
                'name': 'Dispatch Wizard',
                'view_type': 'form',
@@ -103,25 +111,55 @@ class vehicle_dispatch_wizard(models.TransientModel):
 	_name='vehicle.dispatch.wizard'
 	ride_id=fields.Many2one('hertsens.rit',required=True)
 	project_id=fields.Many2one('project.project', required=True)
-	driver_id=fields.Many2one('res.users')
-	dispatch_message=fields.Char(size=160)
+	driver_id=fields.Many2one('res.users', required=True)
+	driver_mobile=fields.Char()
+	dispatch_message=fields.Text(size=160)
+	partner_id=fields.Many2one('res.partner')
+
+	@api.onchange('driver_id')
+	@api.one
+	def change_mobile(self):
+		#pdb.set_trace()
+		self.driver_mobile = self.driver_id.employee_ids.mobile_phone
 
 	@api.multi
 	def confirm_dispatch(self):
 		#pdb.set_trace()
+		#check if driver changed on vehicle
+		if self.driver_id != self.project_id.driver_id:
+			#remove vehicle from driver
+			self.project_id.driver_id.write({
+					'project_id':False,
+				})
+			#remove driver from project
+			self.driver_id.project_id.write(
+				{
+					'driver_id':False,
+					'members':[[3,self.driver_id.id]],
+				})
+			#update driver
+			self.driver_id.write(
+				{
+				'project_id':self.project_id.id,
+				})
+		#update project with new ride	
 		self.project_id.write({
 			'driver_id':self.driver_id.id,
 			'origin': self.ride_id.vertrek,
 			'destination':self.ride_id.bestemming,
 			'kanban_state':'blocked',
+			'members':[[6, False, [self.driver_id.id]]],
 			})
+		#update ride status
 		self.ride_id.write({
 			'state':'dispatched',
 			})
+		#create task
 		self.env['project.task'].create({
-			'name': self.ride_id.name_get(),
+			'name': self.ride_id.name_get()[0][1].encode("utf8"),
 			'project_id': self.project_id.id,
 			'user_id': self.driver_id.id,
-			'ride_id':self.ride_id.id,		
+			'ride_id':self.ride_id.id,	
+			'description': self.dispatch_message,	
 			})
 
