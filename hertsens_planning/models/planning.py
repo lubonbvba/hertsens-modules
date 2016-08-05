@@ -111,7 +111,7 @@ class vehicle_dispatch_wizard(models.TransientModel):
 	_name='vehicle.dispatch.wizard'
 	ride_id=fields.Many2one('hertsens.rit',required=True)
 	project_id=fields.Many2one('project.project', required=True)
-	driver_id=fields.Many2one('res.users', required=True)
+	driver_id=fields.Many2one('res.users')
 	driver_mobile=fields.Char()
 	dispatch_message=fields.Text(size=160)
 	partner_id=fields.Many2one('res.partner')
