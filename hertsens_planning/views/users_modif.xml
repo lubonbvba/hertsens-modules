@@ -23,9 +23,8 @@
 			<field name="inherit_id" ref="base.view_users_simple_form"/>
 			<field name="arch" type="xml">
 				<field name="fax" position="after">
-							<field name="is_driver" />
-
-
+					<field name="is_driver" />
+					<field name="project_id" />
 				</field>
 			</field>
 		</record>

@@ -15,7 +15,7 @@ import time
 # 	ritprijs=fields.Float()
 # 	vertrek=fields.Char(help="Vertrek plaats")
 # 	bestemming=fields.Char(help="Bestemming plaats")
-# 	refklant=fields.Char(help="Referentie opgegeven door klant")	
+# 	refklant=fields.Char(help="Referentie opvegegeven door klant")	
 
 
 class hertsens_rit(models.Model):
