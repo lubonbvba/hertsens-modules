@@ -4,7 +4,7 @@ import pdb
 
 class project(models.Model):
 	_inherit="project.project"
-
+	_description="Vehicles"
 	vehicle_id=fields.Many2one('fleet.vehicle', string="Vehicle")
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
 	driver_id=fields.Many2one('res.users', string="Driver", track_visibility='onchange')
@@ -13,9 +13,9 @@ class project(models.Model):
 	destination=fields.Char(help="Current destination")
 	false=fields.Boolean(help="fake field for searching logic", default=False)
 
-	kanban_state=fields.Selection([('normal', 'tbd'),('blocked', 'In Use'),('done', 'Available')], 'Kanban State',
+	kanban_state=fields.Selection([('unavailable', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
                                          help="A task's kanban state indicates special situations affecting it:\n"
-                                              " * Tbd/gray to define (Repair?)\n"
+                                              " * Unavailabe/gray Unavailabe\n"
                                               " * In use/red, performing a ride\n"
                                               " * Available/green: Free for dispatch",
                                          required=False, copy=False, default='normal')
@@ -28,6 +28,7 @@ class project(models.Model):
         
 class task(models.Model):
 	_inherit="project.task"
+
 	ride_id=fields.Many2one('hertsens.rit', string="Ride")
 
 	@api.one	
@@ -37,7 +38,10 @@ class task(models.Model):
 		 	new_stage=vals['stage_id']
 		 	if new_stage==self.env['ir.model.data'].xmlid_lookup('project.project_tt_deployment')[2]:
 		 		#new state=Ready
-		 		self.end_ride()		 	
+		 		self.end_ride()	
+		 	if new_stage==self.env['ir.model.data'].xmlid_lookup('project.project_tt_cancel')[2]:
+		 		#new state=Ready
+		 		self.cancel_ride()		 	
 		 	#if new_stage=self.env['ir.model.data'].xmlid_lookup('hertsens_planning.project_tt_exception')[3]:
 	
 		#project.project_tt_deployment
@@ -59,4 +63,24 @@ class task(models.Model):
 				'origin': '',
 				#'destination': '',
 				})
+			self.user_id.write({
+				'is_available_for_planning': True,
+				})
 
+	@api.one
+	def cancel_ride(self):
+#		pdb.set_trace()		#process end of ride
+		#update ride      
+		self.ride_id.write({
+			'state':'planned',
+			})
+		#change vehicle status only if 1 ride assigned
+		if self.project_id.task_count == 1:
+			self.project_id.write({
+				'kanban_state': 'done',
+				'origin': '',
+				'destination': '',
+				})
+			self.user_id.write({
+				'is_available_for_planning': True,
+				})

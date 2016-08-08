@@ -48,7 +48,7 @@
 							<group>
 								<field name="ride_id" readonly="True" context="{'detailed':1}"/>
 								<field name="project_id" readonly="True" context="{'detailed':1}"/>
-								<field name="driver_id" required="True" domain="[('is_driver','=',True)]"/>
+								<field name="driver_id" required="True" domain="['&amp;',('is_driver','=',True),'|','|',('is_available_for_planning','=', True),('project_id','=',False),('project_id','=',project_id)]"/>
 								<field name="driver_mobile" />
 							</group>
 							<group>

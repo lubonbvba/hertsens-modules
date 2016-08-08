@@ -10,6 +10,7 @@
 					<page string="Hertsens">
 						<group>
 							<field name="is_driver" />
+							<field name="is_available_for_planning"  />
 							<field name="project_id" />
 							<field name="employee_ids" />
 						</group>
@@ -25,6 +26,7 @@
 				<field name="fax" position="after">
 					<field name="is_driver" />
 					<field name="project_id" />
+					<field name="is_available_for_planning"  />
 				</field>
 			</field>
 		</record>
@@ -35,6 +37,7 @@
 			<field name="arch" type="xml">
 				<field name="name" position="after" >
 					<field name="is_driver" />
+					<field name="is_available_for_planning"  />
 				</field>
 			</field>
 		</record>

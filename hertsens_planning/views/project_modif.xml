@@ -42,6 +42,7 @@
 								<field name="project_id"/>
 								<field name="name"/>
 								<field name="user_id"/>
+								<field name="stage_id"/>
 							</tree>
 							</field>
 						</page>

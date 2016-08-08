@@ -59,7 +59,24 @@
             <field name="arch" type="xml">
                 <notebook position="inside">
                     <page string="Rides">
-                        <field name="rides_ids" readonly="1"/>
+                        <field name="rides_ids" readonly="1">
+                            <tree>
+                                <field name="datum"/>
+                                <field name="vertrek"/>
+                                <field name="bestemming"/>
+                                <field name="refklant"/>
+                                <field name="ritprijs"/>
+                                <field name="wachttijd"/>
+                                <field name="total_ride_price"/>
+                                <field name="charges_vat"/>
+                                <field name="charges_exvat"/>
+                                <field name="finished"/>
+                                <field name="cmr"/>
+                                <field name="state"/>
+
+                            </tree>
+                        </field>
+
                     </page>
                 </notebook>
             </field>

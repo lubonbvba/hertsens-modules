@@ -61,7 +61,7 @@ class planning_vehicles(models.TransientModel):
 	partner_id=fields.Many2one('res.partner', string="Customer")
 	
 	driver_id=fields.Many2one('res.users', string="Driver")	
-	kanban_state=fields.Selection([('normal', 'tbd'),('blocked', 'In Use'),('done', 'Available')], 'Kanban State',
+	kanban_state=fields.Selection([('unavailable', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
                                          track_visibility='onchange',
                                          help="A task's kanban state indicates special situations affecting it:\n"
                                               " * Tbd/gray to define (Repair?)\n"
@@ -130,6 +130,7 @@ class vehicle_dispatch_wizard(models.TransientModel):
 			#remove vehicle from driver
 			self.project_id.driver_id.write({
 					'project_id':False,
+					'is_availabe_for_planning':True,
 				})
 			#remove driver from project
 			self.driver_id.project_id.write(
@@ -141,13 +142,20 @@ class vehicle_dispatch_wizard(models.TransientModel):
 			self.driver_id.write(
 				{
 				'project_id':self.project_id.id,
+				'is_availabe_for_planning':True,
 				})
+		else:
+			self.driver_id.write(
+				{
+				'project_id':self.project_id.id,
+				'is_availabe_for_planning':False,
+				})			
 		#update project with new ride	
 		self.project_id.write({
 			'driver_id':self.driver_id.id,
 			'origin': self.ride_id.vertrek,
 			'destination':self.ride_id.bestemming,
-			'kanban_state':'blocked',
+			'kanban_state':'inuse',
 			'members':[[6, False, [self.driver_id.id]]],
 			})
 		#update ride status
