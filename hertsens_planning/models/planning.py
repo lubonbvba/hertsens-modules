@@ -7,14 +7,14 @@ import pdb
 
 class vehicle_planning_wizard(models.TransientModel):
 	_name="vehicle.planning.wizard"
-	ride_id=fields.Many2one('hertsens.rit')
+	ride_id=fields.Many2one('hertsens.rit', string="ride")
 	project_id=fields.Many2one('project.project', string="Vehicle")
-	partner_id=fields.Many2one('res.partner')
+	partner_id=fields.Many2one('res.partner', string="Customer")
 	task_id=fields.Many2many('project.task')
-	driver_id=fields.Many2one('res.users')
+	driver_id=fields.Many2one('res.users', string="Driver")
 	name=fields.Char()
 	dispatch_message=fields.Text()
-	vehicle_type_id=fields.Many2one('fleet.vehicle.type')
+	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
 	show_type_only=fields.Boolean(help="Show only vehicles of this type", default=True)
 	show_free_only=fields.Boolean(help="Show only free vehicles", default=True)
 	planning_vehicles_ids=fields.One2many('planning.vehicles','vehicle_planning_wizard_id')
@@ -56,11 +56,11 @@ class planning_vehicles(models.TransientModel):
 
 	vehicle_planning_wizard_id=fields.Many2one("vehicle.planning.wizard")
 	name=fields.Char()
-	vehicle_type_id=fields.Many2one('fleet.vehicle.type')
-	project_id=fields.Many2one('project.project')
-	partner_id=fields.Many2one('res.partner')
+	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
+	project_id=fields.Many2one('project.project', string="Vehicle")
+	partner_id=fields.Many2one('res.partner', string="Customer")
 	
-	driver_id=fields.Many2one('res.users')	
+	driver_id=fields.Many2one('res.users', string="Driver")	
 	kanban_state=fields.Selection([('normal', 'tbd'),('blocked', 'In Use'),('done', 'Available')], 'Kanban State',
                                          track_visibility='onchange',
                                          help="A task's kanban state indicates special situations affecting it:\n"
@@ -109,12 +109,12 @@ class planning_vehicles(models.TransientModel):
 
 class vehicle_dispatch_wizard(models.TransientModel):
 	_name='vehicle.dispatch.wizard'
-	ride_id=fields.Many2one('hertsens.rit',required=True)
-	project_id=fields.Many2one('project.project', required=True)
-	driver_id=fields.Many2one('res.users')
+	ride_id=fields.Many2one('hertsens.rit',required=True, string="Ride")
+	project_id=fields.Many2one('project.project', required=True, string="Vehicle")
+	driver_id=fields.Many2one('res.users', string="Driver")
 	driver_mobile=fields.Char()
 	dispatch_message=fields.Text(size=160)
-	partner_id=fields.Many2one('res.partner')
+	partner_id=fields.Many2one('res.partner', string="Customer")
 
 	@api.onchange('driver_id')
 	@api.one

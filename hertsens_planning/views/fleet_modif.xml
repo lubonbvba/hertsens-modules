@@ -11,7 +11,6 @@
 					<field name="vehicle_length"/>
 					<field name="vehicle_width"/>
 					<field name="vehicle_heigth"/>
-					<field name="vehicle_heigth"/>
 					<field name="vehicle_load"/>
 					<field name="vehicle_pallets"/>
 					<field name="vehicle_license"/>

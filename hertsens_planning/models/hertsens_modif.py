@@ -7,7 +7,7 @@ import pdb
 class hertsens_rit(models.Model):
 	_inherit="hertsens.rit"
 
-	vehicle_type_id=fields.Many2one('fleet.vehicle.type')
+	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
 	task_ids=fields.One2many('project.task','ride_id')
 	
 	@api.one

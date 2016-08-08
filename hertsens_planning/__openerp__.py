@@ -15,8 +15,8 @@
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
-    'category': 'Uncategorized',
-    'version': '0.7',
+    'category': 'Hertsens',
+    'version': '0.8',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'hertsens_base', 'project', 'fleet',],

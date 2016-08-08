@@ -1,0 +1,494 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hertsens_planning
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-08 09:27+0000\n"
+"PO-Revision-Date: 2016-08-08 11:49+0200\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: nl_BE\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#. module: hertsens_planning
+#: model:ir.actions.act_window,help:hertsens_planning.fleet_vehicle_type_act
+msgid ""
+"<p class=\"oe_view_nocontent_create\">\n"
+"\t\t\t\t\tClick to create a new model.\n"
+"\t\t\t\t</p><p>\n"
+"\t\t\t\tYou can define several types.\n"
+"\t\t\t</p>\n"
+"\t\t"
+msgstr ""
+"<p class=\"oe_view_nocontent_create\">\n"
+"\t\t\t\t\tClick to create a new model.\n"
+"\t\t\t\t</p><p>\n"
+"\t\t\t\tYou can define several types.\n"
+"\t\t\t</p>\n"
+"\t\t"
+
+#. module: hertsens_planning
+#: help:planning.vehicles,kanban_state:0 help:project.project,kanban_state:0
+msgid ""
+"A task's kanban state indicates special situations affecting it:\n"
+" * Tbd/gray to define (Repair?)\n"
+" * In use/red, performing a ride\n"
+" * Available/green: Free for dispatch"
+msgstr ""
+"A task's kanban state indicates special situations affecting it:\n"
+" * Tbd/gray to define (Repair?)\n"
+" * In use/red, performing a ride\n"
+" * Available/green: Free for dispatch"
+
+#. module: hertsens_planning
+#: model:project.task.type,name:hertsens_planning.project_tt_accepted
+msgid "Accepted"
+msgstr "Bevestigd"
+
+#. module: hertsens_planning
+#: model:project.task.type,name:hertsens_planning.project_tt_assigned
+msgid "Assigned"
+msgstr "Toegewezen"
+
+#. module: hertsens_planning
+#: selection:planning.vehicles,kanban_state:0
+#: selection:project.project,kanban_state:0
+msgid "Available"
+msgstr "Beschikbaar"
+
+#. module: hertsens_planning
+#: model:ir.model,name:hertsens_planning.model_planning_vehicles
+msgid "Available vehicles"
+msgstr "Beschikbare voertuigen"
+
+#. module: hertsens_planning
+#: view:vehicle.dispatch.wizard:hertsens_planning.dispatch_wizard_form
+#: view:vehicle.planning.wizard:hertsens_planning.planning_wizard_form
+msgid "Cancel"
+msgstr "Annuleer"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,color_index:0
+msgid "Color index"
+msgstr "Kleur"
+
+#. module: hertsens_planning
+#: view:vehicle.dispatch.wizard:hertsens_planning.dispatch_wizard_form
+msgid "Confirm - send sms"
+msgstr "Bevestig - sms"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,create_uid:0 field:planning.vehicles,create_uid:0
+#: field:vehicle.dispatch.wizard,create_uid:0
+#: field:vehicle.planning.wizard,create_uid:0
+msgid "Created by"
+msgstr "Created by"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,create_date:0 field:planning.vehicles,create_date:0
+#: field:vehicle.dispatch.wizard,create_date:0
+#: field:vehicle.planning.wizard,create_date:0
+msgid "Created on"
+msgstr "Created on"
+
+#. module: hertsens_planning
+#: help:project.project,destination:0
+msgid "Current destination"
+msgstr "Huidige bestemming"
+
+#. module: hertsens_planning
+#: help:project.project,origin:0
+msgid "Current origin"
+msgstr "Huidig vertrek"
+
+#. module: hertsens_planning
+#: field:res.users,project_id:0
+msgid "Current vehicle"
+msgstr "Huidig voertuig"
+
+#. module: hertsens_planning
+#: help:res.users,project_id:0
+msgid "Currently assigned vehicle"
+msgstr "Huidig tegewezen voertuig"
+
+#. module: hertsens_planning
+#: field:planning.vehicles,partner_id:0
+#: field:vehicle.dispatch.wizard,partner_id:0
+#: field:vehicle.planning.wizard,partner_id:0
+msgid "Customer"
+msgstr "Klant"
+
+#. module: hertsens_planning
+#: view:fleet.vehicle.type:hertsens_planning.fleet_vehicle_type_kanban
+msgid "Delete"
+msgstr "Verwijder"
+
+#. module: hertsens_planning
+#: field:project.project,destination:0
+msgid "Destination"
+msgstr "Bestemming"
+
+#. module: hertsens_planning
+#: view:hertsens.rit:hertsens_planning.hertsens_project_rit_form
+msgid "Dispatch"
+msgstr "Dispatch"
+
+#. module: hertsens_planning
+#: field:vehicle.dispatch.wizard,dispatch_message:0
+#: field:vehicle.planning.wizard,dispatch_message:0
+msgid "Dispatch message"
+msgstr "Dispatch bericht"
+
+#. module: hertsens_planning
+#: view:hertsens.rit:hertsens_planning.hertsens_project_rit_form
+msgid "Dispatches"
+msgstr "Dispatches"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,display_name:0
+#: field:planning.vehicles,display_name:0
+#: field:vehicle.dispatch.wizard,display_name:0
+#: field:vehicle.planning.wizard,display_name:0
+msgid "Display Name"
+msgstr "Zichtbare naam"
+
+#. module: hertsens_planning
+#: field:planning.vehicles,driver_id:0 field:project.project,driver_id:0
+#: field:res.users,is_driver:0 field:vehicle.dispatch.wizard,driver_id:0
+#: field:vehicle.planning.wizard,driver_id:0
+msgid "Driver"
+msgstr "Chauffeur"
+
+#. module: hertsens_planning
+#: field:vehicle.dispatch.wizard,driver_mobile:0
+msgid "Driver mobile"
+msgstr "GSM Chauffeur"
+
+#. module: hertsens_planning
+#: model:project.task.type,name:hertsens_planning.project_tt_exception
+msgid "Exception"
+msgstr "Uitzondering"
+
+#. module: hertsens_planning
+#: field:project.project,false:0
+msgid "False"
+msgstr "False"
+
+#. module: hertsens_planning
+#: field:project.project,free_for_planning:0
+msgid "Free for planning"
+msgstr "Beschikbaar voor plannig"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_heigth:0
+msgid "Heigth"
+msgstr "Hoogte"
+
+#. module: hertsens_planning
+#: view:res.users:hertsens_planning.users_modif_form
+msgid "Hertsens"
+msgstr "Hertsens"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,id:0 field:planning.vehicles,id:0
+#: field:vehicle.dispatch.wizard,id:0 field:vehicle.planning.wizard,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: hertsens_planning
+#: selection:planning.vehicles,kanban_state:0
+#: selection:project.project,kanban_state:0
+msgid "In Use"
+msgstr "In gebruik"
+
+#. module: hertsens_planning
+#: model:ir.model,name:hertsens_planning.model_fleet_vehicle
+msgid "Information on a vehicle"
+msgstr "Informatie op een voertuig"
+
+#. module: hertsens_planning
+#: help:project.project,free_for_planning:0
+msgid "Is vehicle free for planning"
+msgstr "Is vehicle free for planning"
+
+#. module: hertsens_planning
+#: field:planning.vehicles,kanban_state:0 field:project.project,kanban_state:0
+msgid "Kanban State"
+msgstr "Kanban State"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,__last_update:0
+#: field:planning.vehicles,__last_update:0
+#: field:vehicle.dispatch.wizard,__last_update:0
+#: field:vehicle.planning.wizard,__last_update:0
+msgid "Last Modified on"
+msgstr "Last Modified on"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,write_uid:0 field:planning.vehicles,write_uid:0
+#: field:vehicle.dispatch.wizard,write_uid:0
+#: field:vehicle.planning.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,write_date:0 field:planning.vehicles,write_date:0
+#: field:vehicle.dispatch.wizard,write_date:0
+#: field:vehicle.planning.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_length:0
+msgid "Length"
+msgstr "Lengte"
+
+#. module: hertsens_planning
+#: help:fleet.vehicle,vehicle_license:0
+msgid "License (Transport) number"
+msgstr "Vergunning"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_license:0
+msgid "License n°"
+msgstr "License n°"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_load:0
+msgid "Load"
+msgstr "Laadvermogen"
+
+#. module: hertsens_planning
+#: help:fleet.vehicle,vehicle_load:0
+msgid "Maximum load in kg"
+msgstr "Laadvermogen (kg)"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,name:0 field:planning.vehicles,name:0
+#: field:vehicle.planning.wizard,name:0
+msgid "Name"
+msgstr "Name"
+
+#. module: hertsens_planning
+#: help:fleet.vehicle,vehicle_pallets:0
+msgid "Number of pallet places"
+msgstr "Aantal pallet plaatsen"
+
+#. module: hertsens_planning
+#: field:project.project,origin:0
+msgid "Origin"
+msgstr "Vertrek"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_pallets:0
+msgid "Pallet places"
+msgstr "Pallet plaatsen"
+
+#. module: hertsens_planning
+#: field:vehicle.planning.wizard,planning_vehicles_ids:0
+msgid "Planning vehicles ids"
+msgstr "Planning vehicles ids"
+
+#. module: hertsens_planning
+#: view:res.users:hertsens_planning.users_modif_form
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#. module: hertsens_planning
+#: model:ir.model,name:hertsens_planning.model_project_project
+msgid "Project"
+msgstr "Voertuig"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,project_id:0
+msgid "Project id"
+msgstr "Project id"
+
+#. module: hertsens_planning
+#: field:project.task,ride_id:0 field:vehicle.dispatch.wizard,ride_id:0
+msgid "Ride"
+msgstr "Rit"
+
+#. module: hertsens_planning
+#: model:ir.ui.menu,name:hertsens_planning.project_all_ritten_menu
+#: model:ir.ui.menu,name:hertsens_planning.project_ritten_menu
+msgid "Rides"
+msgstr "Ritten"
+
+#. module: hertsens_planning
+#: view:hertsens.rit:hertsens_planning.hertsens_project_rit_tree
+msgid "Rides to dispatch"
+msgstr "Te dispatchen ritten"
+
+#. module: hertsens_planning
+#: model:ir.actions.act_window,name:hertsens_planning.project_all_ritten_action
+msgid "Ritten"
+msgstr "Ritten"
+
+#. module: hertsens_planning
+#: view:vehicle.planning.wizard:hertsens_planning.planning_wizard_form
+msgid "Search"
+msgstr "Zoeken"
+
+#. module: hertsens_planning
+#: view:vehicle.planning.wizard:hertsens_planning.planning_wizard_form
+msgid "Select"
+msgstr "Kies"
+
+#. module: hertsens_planning
+#: view:vehicle.planning.wizard:hertsens_planning.planning_wizard_form
+msgid "Selections"
+msgstr "Keuzes"
+
+#. module: hertsens_planning
+#: view:fleet.vehicle.type:hertsens_planning.fleet_vehicle_type_kanban
+msgid "Settings"
+msgstr "Settings"
+
+#. module: hertsens_planning
+#: field:vehicle.planning.wizard,show_free_only:0
+msgid "Show free only"
+msgstr "Toon enkel vrij"
+
+#. module: hertsens_planning
+#: help:vehicle.planning.wizard,show_free_only:0
+msgid "Show only free vehicles"
+msgstr "Laat enkel de beschikbare voertuigen zien"
+
+#. module: hertsens_planning
+#: help:vehicle.planning.wizard,show_type_only:0
+msgid "Show only vehicles of this type"
+msgstr "Laat enkel voertuigen van het huidige type zien"
+
+#. module: hertsens_planning
+#: field:vehicle.planning.wizard,show_type_only:0
+msgid "Show type only"
+msgstr "Toon enkel type"
+
+#. module: hertsens_planning
+#: model:ir.model,name:hertsens_planning.model_project_task
+msgid "Task"
+msgstr "Taak"
+
+#. module: hertsens_planning
+#: field:vehicle.planning.wizard,task_id:0
+msgid "Task id"
+msgstr "Task id"
+
+#. module: hertsens_planning
+#: field:hertsens.rit,task_ids:0
+msgid "Task ids"
+msgstr "Task ids"
+
+#. module: hertsens_planning
+#: help:res.users,is_driver:0
+msgid "Tick if user is a driver"
+msgstr "Aanklikken als gebruiker chauffeur is"
+
+#. module: hertsens_planning
+#: view:project.project:hertsens_planning.view_fleet_project_form_inherited
+msgid "True"
+msgstr "True"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,type_code:0
+msgid "Type code"
+msgstr "Type code"
+
+#. module: hertsens_planning
+#: model:ir.model,name:hertsens_planning.model_res_users
+msgid "Users"
+msgstr "Gebruikers"
+
+#. module: hertsens_planning
+#: field:planning.vehicles,project_id:0 field:project.project,vehicle_id:0
+#: field:vehicle.dispatch.wizard,project_id:0
+#: field:vehicle.planning.wizard,project_id:0
+msgid "Vehicle"
+msgstr "Voertuig"
+
+#. module: hertsens_planning
+#: model:ir.actions.act_window,name:hertsens_planning.fleet_vehicle_type_act
+#: model:ir.ui.menu,name:hertsens_planning.fleet_vehicle_type_menu
+msgid "Vehicle Type"
+msgstr "Voertuig soort"
+
+#. module: hertsens_planning
+#: help:fleet.vehicle,vehicle_heigth:0 help:fleet.vehicle,vehicle_length:0
+msgid "Vehicle heigth in cm"
+msgstr "Voertuig hoogte in cm"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle.type,vehicle_ids:0
+msgid "Vehicle ids"
+msgstr "Vehicle ids"
+
+#. module: hertsens_planning
+#: field:planning.vehicles,vehicle_planning_wizard_id:0
+msgid "Vehicle planning wizard id"
+msgstr "Vehicle planning wizard id"
+
+#. module: hertsens_planning
+#: view:vehicle.dispatch.wizard:hertsens_planning.dispatch_wizard_form
+#: view:vehicle.planning.wizard:hertsens_planning.planning_wizard_form
+msgid "Vehicle selection"
+msgstr "Voertuig keuze"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_type_id:0
+#: view:fleet.vehicle.type:hertsens_planning.fleet_vehicle_type_form
+#: view:fleet.vehicle.type:hertsens_planning.fleet_vehicle_type_tree
+#: field:hertsens.rit,vehicle_type_id:0
+#: field:planning.vehicles,vehicle_type_id:0
+#: field:project.project,vehicle_type_id:0
+#: field:vehicle.planning.wizard,vehicle_type_id:0
+msgid "Vehicle type"
+msgstr "Voertuig type"
+
+#. module: hertsens_planning
+#: model:ir.model,name:hertsens_planning.model_fleet_vehicle_type
+msgid "Vehicle types"
+msgstr "Voertuig types"
+
+#. module: hertsens_planning
+#: help:fleet.vehicle,vehicle_width:0
+msgid "Vehicle width in cm"
+msgstr "Voertuig breedte  in cm"
+
+#. module: hertsens_planning
+#: view:vehicle.planning.wizard:hertsens_planning.planning_wizard_form
+msgid "Vehicles"
+msgstr "Voertuigen"
+
+#. module: hertsens_planning
+#: field:fleet.vehicle,vehicle_width:0
+msgid "Width"
+msgstr "Breedte"
+
+#. module: hertsens_planning
+#: help:project.project,false:0
+msgid "fake field for searching logic"
+msgstr "fake field for searching logic"
+
+#. module: hertsens_planning
+#: view:vehicle.dispatch.wizard:hertsens_planning.dispatch_wizard_form
+msgid "or"
+msgstr "of"
+
+#. module: hertsens_planning
+#: field:vehicle.planning.wizard,ride_id:0
+msgid "ride"
+msgstr "Rit"
+
+#. module: hertsens_planning
+#: selection:planning.vehicles,kanban_state:0
+#: selection:project.project,kanban_state:0
+msgid "tbd"
+msgstr "tbd"

@@ -4,17 +4,16 @@ import pdb
 
 class project(models.Model):
 	_inherit="project.project"
-	
-	vehicle_id=fields.Many2one('fleet.vehicle')
-	vehicle_type_id=fields.Many2one('fleet.vehicle.type')
-	driver_id=fields.Many2one('res.users')
+
+	vehicle_id=fields.Many2one('fleet.vehicle', string="Vehicle")
+	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
+	driver_id=fields.Many2one('res.users', string="Driver", track_visibility='onchange')
 	free_for_planning=fields.Boolean(help="Is vehicle free for planning")
 	origin=fields.Char(help="Current origin")
 	destination=fields.Char(help="Current destination")
 	false=fields.Boolean(help="fake field for searching logic", default=False)
 
 	kanban_state=fields.Selection([('normal', 'tbd'),('blocked', 'In Use'),('done', 'Available')], 'Kanban State',
-                                         track_visibility='onchange',
                                          help="A task's kanban state indicates special situations affecting it:\n"
                                               " * Tbd/gray to define (Repair?)\n"
                                               " * In use/red, performing a ride\n"
@@ -29,7 +28,7 @@ class project(models.Model):
         
 class task(models.Model):
 	_inherit="project.task"
-	ride_id=fields.Many2one('hertsens.rit')
+	ride_id=fields.Many2one('hertsens.rit', string="Ride")
 
 	@api.one	
 	def write(self, vals=None):

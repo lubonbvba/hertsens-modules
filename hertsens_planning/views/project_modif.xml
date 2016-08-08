@@ -134,6 +134,7 @@
 					<!-- This replaces all fields -->
 					<group>
 					<field name="vehicle_type_id" readonly="True"/>
+					<field name="vehicle_id" readonly="True"/>
 					<field name="driver_id" readonly="False"/>
 					<field name="origin" readonly="False"/>
 					<field name="destination" readonly="False"/>
