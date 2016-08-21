@@ -59,15 +59,14 @@ class planning_vehicles(models.TransientModel):
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
 	project_id=fields.Many2one('project.project', string="Vehicle")
 	partner_id=fields.Many2one('res.partner', string="Customer")
-	
+	state_verbose=fields.Char(string="Vehicle state")
 	driver_id=fields.Many2one('res.users', string="Driver")	
-	kanban_state=fields.Selection([('unavailable', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
-                                         track_visibility='onchange',
+	kanban_state=fields.Selection([('normal', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
                                          help="A task's kanban state indicates special situations affecting it:\n"
-                                              " * Tbd/gray to define (Repair?)\n"
+                                              " * Unavailabe/gray Unavailabe, in dispatch or other\n"
                                               " * In use/red, performing a ride\n"
                                               " * Available/green: Free for dispatch",
-                                         required=False, copy=False, default='normal')
+                                         required=False, copy=False, default='done')
 
 	@api.multi
 	def new_candidates(self,wizard,candidates):
@@ -79,6 +78,7 @@ class planning_vehicles(models.TransientModel):
 				'vehicle_type_id': candidate.vehicle_type_id.id,
 				'vehicle_planning_wizard_id':wizard.id,
 				'project_id':candidate.id,
+				'state_verbose':candidate.state_verbose,
 				'driver_id':candidate.driver_id.id,
 			})
 
@@ -92,6 +92,10 @@ class planning_vehicles(models.TransientModel):
 			})
 		dispatch_wizard.driver_mobile=str(self.project_id.driver_id.employee_ids.mobile_phone)
 		dispatch_wizard.partner_id=dispatch_wizard.ride_id.partner_id
+		planning_string="Planning: " + fields.Datetime.now()
+
+		self.project_id.write({'kanban_state':'normal',
+								'state_verbose': planning_string})
 		return {
                'name': 'Dispatch Wizard',
                'view_type': 'form',
@@ -126,6 +130,7 @@ class vehicle_dispatch_wizard(models.TransientModel):
 	def confirm_dispatch(self):
 		#pdb.set_trace()
 		#check if driver changed on vehicle
+		#pdb.set_trace()
 		if self.driver_id != self.project_id.driver_id:
 			#remove vehicle from driver
 			self.project_id.driver_id.write({
@@ -142,19 +147,21 @@ class vehicle_dispatch_wizard(models.TransientModel):
 			self.driver_id.write(
 				{
 				'project_id':self.project_id.id,
-				'is_availabe_for_planning':True,
+				'is_available_for_planning':False,
 				})
 		else:
 			self.driver_id.write(
 				{
 				'project_id':self.project_id.id,
 				'is_availabe_for_planning':False,
-				})			
+				})		
+		#pdb.set_trace()	
 		#update project with new ride	
 		self.project_id.write({
 			'driver_id':self.driver_id.id,
 			'origin': self.ride_id.vertrek,
 			'destination':self.ride_id.bestemming,
+			'state_verbose':'',
 			'kanban_state':'inuse',
 			'members':[[6, False, [self.driver_id.id]]],
 			})
@@ -167,7 +174,9 @@ class vehicle_dispatch_wizard(models.TransientModel):
 			'name': self.ride_id.name_get()[0][1].encode("utf8"),
 			'project_id': self.project_id.id,
 			'user_id': self.driver_id.id,
+			'employee_id': self.driver_id.employee_ids.id,
 			'ride_id':self.ride_id.id,	
-			'description': self.dispatch_message,	
+			'description': self.dispatch_message,
+			'date_start':	fields.Datetime.now()
 			})
 

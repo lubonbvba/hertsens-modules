@@ -2,7 +2,10 @@
 
 from openerp import models, fields, api
 import pdb
+import openerp
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class hertsens_rit(models.Model):
 	_inherit="hertsens.rit"
@@ -18,7 +21,25 @@ class hertsens_rit(models.Model):
 			pdb.set_trace()
 
 		return self.id, name		
-	
+
+	@api.multi
+	def _migrate(self):
+		_logger.info("Updating departure_times...")
+
+		records=self.search([('departure_time','=', False)])
+		for record in records:
+			record.departure_time=self._calculate_departure_time(record.datum)
+#			pdb.set_trace()
+
+
+	def init(self,cr):
+		self._migrate(cr, openerp.SUPERUSER_ID,[],{})
+		# cr.execute("SELECT id, datum, departure_time FROM hertsens_rit"
+  #       	     " WHERE departure_time IS NULL")
+		# for datum, departure_time 
+		#pdb.set_trace()
+
+
 	@api.multi	
 	def dispatch_wizard(self):
 		#pdb.set_trace()
@@ -41,5 +62,6 @@ class hertsens_rit(models.Model):
                 'target': 'new',
 #                'nodestroy': True,
             }
+
 
 

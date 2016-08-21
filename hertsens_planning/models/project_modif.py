@@ -12,13 +12,21 @@ class project(models.Model):
 	origin=fields.Char(help="Current origin")
 	destination=fields.Char(help="Current destination")
 	false=fields.Boolean(help="fake field for searching logic", default=False)
+	state_verbose=fields.Char(string='Vehicle state', help="Description why vehicle is not available for planning")
 
-	kanban_state=fields.Selection([('unavailable', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
+	# old_kanban_state=fields.Selection([('unavailable', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
+ #                                         help="A task's kanban state indicates special situations affecting it:\n"
+ #                                              " * Unavailabe/gray Unavailabe\n"
+ #                                              " * In use/red, performing a ride\n"
+ #                                              " * Available/green: Free for dispatch",
+ #                                         required=False, copy=False, default='done', oldname='kanban_state')
+
+	kanban_state=fields.Selection([('normal', 'Unavailabe'),('inuse', 'In Use'),('done', 'Available')], 'Kanban State',
                                          help="A task's kanban state indicates special situations affecting it:\n"
-                                              " * Unavailabe/gray Unavailabe\n"
+                                              " * Unavailabe/gray Unavailabe, in dispatch or other\n"
                                               " * In use/red, performing a ride\n"
                                               " * Available/green: Free for dispatch",
-                                         required=False, copy=False, default='normal')
+                                         required=False, copy=False, default='done')
 
 	@api.one	
 	def write(self, vals=None):
@@ -30,6 +38,7 @@ class task(models.Model):
 	_inherit="project.task"
 
 	ride_id=fields.Many2one('hertsens.rit', string="Ride")
+	employee_id=fields.Many2one('hr.employee')
 
 	@api.one	
 	def write(self, vals=None):
@@ -66,6 +75,11 @@ class task(models.Model):
 			self.user_id.write({
 				'is_available_for_planning': True,
 				})
+		self.write({
+			'date_end':	fields.Datetime.now()
+		})	
+
+
 
 	@api.one
 	def cancel_ride(self):
@@ -84,3 +98,6 @@ class task(models.Model):
 			self.user_id.write({
 				'is_available_for_planning': True,
 				})
+		self.write({
+			'date_end':	fields.Datetime.now()
+		})	

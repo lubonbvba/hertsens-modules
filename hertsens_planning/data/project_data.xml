@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="1">
-         <!-- Task Stages -->
-
         <record id="project_tt_assigned" model="project.task.type">
             <field name="sequence">1</field>
             <field name="name">Assigned</field>

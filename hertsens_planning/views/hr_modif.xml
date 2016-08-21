@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="empmlyee_modif_form">
+			<field name="name">employee.modif.form</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form"/>
+			<field name="arch" type="xml">
+				<page string="HR Settings" position="after">
+					<page string="Hertsens">
+						<field name="tasks_ids">
+							<tree default_order="date_start desc">
+								<field name="date_start"/>
+								<field name="date_end"/>
+								<field name="project_id"/>
+								<field name="name"/>
+								<field name="stage_id"/>
+							</tree>
+						</field>
+					</page>
+				</page>
+			</field>
+		</record>
+	</data>
+</openerp>

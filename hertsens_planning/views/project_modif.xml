@@ -6,14 +6,16 @@
 			<field name="name">hertsens.project.rit.tree</field>
 			<field name="model">hertsens.rit</field>
 			<field name="arch" type="xml">
-				<tree string="Rides to dispatch" default_order="datum">
+				<tree string="Rides to dispatch" default_order="departure_time">
+					<field name="departure_time"/>
+					<field name="define_departure_time"/>
 					<field name="datum"/>
 					<field name="vertrek"/>
 					<field name="bestemming"/>
 					<field name="vehicle_type_id"/>
 					<field name="state"/>
-					<field name="partner_id"/>
-					<field name="company_id"/>
+					<field name="partner_id" string="Customer"/>
+					<field name="company_id" string="Company"/>
 				</tree>
 			</field>
 		</record>
@@ -27,13 +29,15 @@
 						<button name="dispatch_wizard" string="Dispatch" type="object"/>
 					</header>
 					<group>
+						<field name="define_departure_time"/>
+						<field name="departure_time"/>
 						<field name="datum"/>
 						<field name="vertrek"/>
 						<field name="bestemming"/>
 						<field name="vehicle_type_id"/>
 						<field name="state"/>
-						<field name="partner_id"/>
-						<field name="company_id"/>
+						<field name="partner_id" string="Customer"/>
+						<field name="company_id" string="Company"/>
 					</group>
 					<notebook>
 						<page string="Dispatches">
@@ -61,6 +65,7 @@
 			<field name="view_type">form</field>
 			<!--field name="view_id" ref="hertsens_project_rit_tree"></field-->
 			<field name="view_mode">tree,form</field>
+			<field name="auto_refresh">1</field>
 			<!-- field name="search_view_id" ref="lubon_suppliers_import_search_view"/ -->
 
 		</record>
@@ -94,6 +99,7 @@
 			<field name="arch" type="xml">
 				<field name="use_tasks" position="after">
 					<field name="kanban_state"/>
+					<field name="state_verbose"/>
 					<field name="driver_id"/>
 					<field name="origin"/>
 					<field name="destination"/>
@@ -108,6 +114,7 @@
                                         <!-- img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value)" t-att-title="record.user_id.value" width="24" height="24" class="oe_kanban_avatar pull-right"/ -->
                                         <!--div class="pull-left" groups="base.group_user"-->
                                             <field name="kanban_state" widget="kanban_state_selection"/>
+                                            <field name="state_verbose" attrs="{'invisible': [('kanban_state','!=','normal')]}"/>
                                             <!-- field name="priority" widget="priority"/-->
                                         <!--/div-->
                                     </div>
@@ -139,11 +146,25 @@
 					<field name="driver_id" readonly="False"/>
 					<field name="origin" readonly="False"/>
 					<field name="destination" readonly="False"/>
+					<field name="state_verbose" readonly="False"/>
 				</group>
 				</xpath>
 				<xpath expr='//field[@name="name"]' position='attributes'>
 					<attribute name="readonly">True</attribute>
 				</xpath>
+			</field>
+		</record>
+		<record id="view_fleet_project_search_inherited" model="ir.ui.view">
+			<field name="name">hertsens_planning.project.search.inherited</field>
+			<field name="model">project.project</field>
+			<field name="inherit_id" ref="project.view_project_project_filter"/>
+			<field name="arch" type="xml">
+				<filter name="Current" position="replace">
+					<filter string="Unavailable" name="Unavailable" domain="[('kanban_state', '=','normal')]"/>
+					<filter string="Active" name="Active" domain="[('kanban_state', '!=','normal')]"/>
+					<filter string="In use" name="InUse" domain="[('kanban_state', '=','inuse')]"/>
+					<filter string="Free" name="Free" domain="[('kanban_state', '=','done')]"/>
+				</filter>
 			</field>
 		</record>
 	</data>

@@ -143,13 +143,16 @@
 <record model="ir.ui.view" id="ritten_tree_view">
     <field name="name">ritten.tree</field>
     <field name="model">hertsens.rit</field>
-        <field name="priority">1</field>
+    <field name="priority">1</field>
 
     <field name="arch" type="xml">
         <tree string="Ritten Tree" editable="top" default_order="datum desc"  colors="blue:state == 'planned';black:state in ('completed');red:state=='waiting';green:state=='toinvoice';gray:state == 'invoiced'"  >
-           <field name="partner_id" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/> 
+           <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/> 
            <field name="company_id" invisible="True" options="{'no_quick_create':True,'no_create_edit':True}"/>
-           <field name="datum" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
+           <field name="datum" required="True" attrs="{'readonly': [('state', '=', 'invoiced')],'required':[('is_recurring','=',False)]}"/>
+           <field name="define_departure_time"/>
+           <field name="departure_time" attrs="{'readonly':[('define_departure_time','=',False)]}" />
+
            <field name="vertrek" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="bestemming" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="refklant" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
@@ -161,6 +164,7 @@
            <field name="finished" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="cmr"  attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="state" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
+           <field name="is_recurring" readonly="True" />
        </tree>
    </field>
 </record>
@@ -175,16 +179,18 @@
           </header>
           <group>
             <group>
-             <field name="company_id"  />
-             <field name="partner_id" domain="[('company_id','=',company_id)]" context="{'default_company_id':company_id, 'default_type':'contract'}"/>
+                <field name="is_recurring"/>"
+                <field name="company_id" string="Company" options="{'no_quick_create':True,'no_create_edit':True}" invisible="True" />
+                <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
 
-             <field name="datum"/>
-             <field name="vertrek"/>
-             <field name="bestemming"/>
-             <field name="refklant" />
-             <field name="ritprijs" />
-         </group>
-         <group>
+                <field name="datum" attrs="{'invisible':[('is_recurring','=',True)], 'required':[('is_recurring','=',False)]}"/>
+                <field name="vertrek"/>
+                <field name="bestemming"/>
+                <field name="refklant" />
+                <field name="ritprijs" />
+
+            </group>
+            <group attrs="{'invisible':[('is_recurring','=',True)]}">
              <field name="wachttijd" />
              <field name="charges_vat" />
              <field name="charges_exvat" />
@@ -192,18 +198,39 @@
              <field name="state" />
              <field name="invoice_id" domain="[('partner_id','=',partner_id)]" />
          </group>
-        </group>
-         <notebook>
-             <page string="Destinations">
-              <field name="destination_ids">
-               <tree string="Destinations" editable="bottom">
-                 <field name="sequence" widget="handle"/>
-                 <field name="destination" />
-             </tree>
-         </field>
 
-     </page>
- </notebook>
+     </group>
+     <notebook>
+        <page string="Recurrency settings" attrs="{'invisible':[('is_recurring','=',False)]}">
+             <group>
+                 <group >
+                     <field name="recurring_active" />
+                     <field name="recurring_start_date" attrs="{'required':[('is_recurring','=',True)]}"/>
+                     <field name="recurring_end_date" />
+                     <!-- field name="recurring_departure_time"/ -->
+                     <field name="recurring_interval" />
+                     <field name="recurring_interval_type" />
+                     <field name="recurring_offset" />
+                     <field name="recurring_next_date"/>
+                 </group>
+                 <group>
+                    <!--button name="check_recurrent_rides" type="object" string="test"/ -->
+                </group>
+            </group>
+        </page>
+        <page string="Scheduled rides" attrs="{'invisible':[('is_recurring','=',False)]}">
+            <field name="child_ids"/>
+        </page>
+
+<!--         <page string="Destinations">
+          <field name="destination_ids">
+             <tree string="Destinations" editable="bottom">
+               <field name="sequence" widget="handle"/>
+               <field name="destination" />
+           </tree>
+       </field>
+   </page> -->
+</notebook>
 </form>
 </field>
 </record>
@@ -221,6 +248,7 @@
 
          <filter name="Quote" string="Quoted" domain="[('state','=','Quoted')]" help="Invoiced"/>
          <filter name="invoiced" string="Invoiced" domain="[('state','=','invoiced')]" help="Invoiced"/>
+         <filter name="Recurring" string="Recurring" domain="[('is_recurring','=',True)]"/>
          <filter name="cancelled" string="Cancelled" domain="[('state','=','cancelled')]" help="Invoiced"/>
          <field name="partner_id" operator="child_of"/>
          <field name="company_id" operator="child_of"/>
@@ -321,8 +349,8 @@
         <record model="ir.actions.act_window" id="all_ritten_action">
             <field name="name">Ritten</field>
             <field name="res_model">hertsens.rit</field>
-<!--            <field name="domain">[('partner_id','child_of', active_id)]</field> -->
-<!--            <field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
+            <!--            <field name="domain">[('partner_id','child_of', active_id)]</field> -->
+            <!--            <field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
             <field name="view_type">form</field>
             <field name="view_id" ref="ritten_tree_view"></field>
             <field name="view_mode">tree,form</field>

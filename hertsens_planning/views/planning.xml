@@ -27,6 +27,7 @@
 									<field name="vehicle_type_id"/>
 									<field name="driver_id"/>
 									<field name="kanban_state" widget="kanban_state_selection"/>
+									<field name="state_verbose"/>
 									<button name="select_candidate" string="Select" type="object"/>
 								</tree>
 							</field>

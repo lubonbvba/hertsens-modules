@@ -3,9 +3,13 @@
 from openerp import exceptions,models, fields, api, _
 import csv,os,string,pdb
 from path import path
-from datetime import date
+from datetime import date,datetime,timedelta
+from pytz import timezone
 import time
+import logging
+import pytz
 
+_logger = logging.getLogger(__name__)
 # class account_analytic_line(models.Model):
 # 	_inherit= "account.analytic.line"
 
@@ -24,10 +28,12 @@ class hertsens_rit(models.Model):
 	_order = "datum desc"
 
 #	line_id=fields.Many2one('account.analytic.line', required=True, ondelete="cascade")
-	partner_id=fields.Many2one('res.partner', string="Company", required=True)
-	company_id=	fields.Many2one( 'res.company', string="Customer", required=True)
+	partner_id=fields.Many2one('res.partner', string="Customer", required=True)
+	company_id=	fields.Many2one( 'res.company', string="Company", required=True)
 	cmr=fields.Char(string="CMR", help="CMR Nummer")
-	datum=fields.Date(required=True)
+	datum=fields.Date(help="Aflever datum", copy=False)
+	departure_time=fields.Datetime(help="Vertrek datum/tijd")
+	define_departure_time=fields.Boolean(string='VL', help="Voorladen")
 	wachttijd=fields.Float(help="Prijs wachttijd")
 	ritprijs=fields.Float()
 	vertrek=fields.Char(help="Vertrek plaats")
@@ -40,6 +46,18 @@ class hertsens_rit(models.Model):
 	finished=fields.Boolean(help="Tick if ride is finished")
 	state=fields.Selection([('quoted','Quote'),('planned','Planned'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned')
 	on=fields.Char(required=True,default="on")
+	is_recurring=fields.Boolean(help="Tick if recurring", copy=False)
+	recurring_active=fields.Boolean(help="Is active?", copy=False)
+	recurring_start_date=fields.Date(help="Recurring start", copy=False)
+	recurring_end_date=fields.Date(help="Recurring end date", copy=False)
+	recurring_departure_time=fields.Char(default="23:59", help="Dispatch time in 24hrs format",copy=False)
+	recurring_interval=fields.Integer(default=7,copy=False)
+	recurring_interval_type=fields.Selection([('days','Days')], default='days',copy=False)
+	recurring_offset=fields.Integer(default=7,help="Number of days before the departure time to make the dispatch record", copy=False)
+	recurring_next_date=fields.Date(string='Next ride to be planned', help="Next planned date",copy=False)	
+	parent_id=fields.Many2one('hertsens.rit', copy=False)
+	child_ids=fields.One2many('hertsens.rit', 'parent_id')
+
 	# @api.onchange('partner_id')
 	# def _checkcompany(self):
 	# 	self.company_id=self.partner_id.company_id
@@ -64,6 +82,38 @@ class hertsens_rit(models.Model):
 	def _set_company(self):
 		self.company_id=self.partner_id.company_id
 	
+
+	@api.multi
+	def _calculate_departure_time(self,datum):
+		if datum:
+				return datum + ' 21:59:00'
+		else:
+				return False
+#		pdb.set_trace()	
+
+	@api.multi
+	@api.onchange('is_recurring')
+	def _set_recurring(self):
+		if self.is_recurring:
+			self.state='dispatched'
+
+
+
+	@api.one	
+	def write(self, vals=None):
+		#pdb.set_trace()
+		if 'datum' in vals.keys():
+			vals['departure_time']=self._calculate_departure_time(vals['datum'])
+
+		super(hertsens_rit,self).write(vals)
+
+	@api.model
+	def create(self, vals):
+		#pdb.set_trace()
+		if not 'departure_time' in vals.keys():
+			vals['departure_time']=self._calculate_departure_time(vals['datum'])
+		return super(hertsens_rit,self).create(vals)
+
 
 
 	@api.one
@@ -101,19 +151,30 @@ class hertsens_rit(models.Model):
 		'fiscal_position': self.partner_id.property_account_position.id
 		}
 
+	@api.multi
+	def check_recurrent_rides(self):
+		_logger.info('Recurrent rides planner')
+		rides = self.search([('is_recurring',"=",True),('recurring_active',"=",True)])
+		for ride in rides:
+			if not ride.recurring_next_date:
+				ride.recurring_next_date=ride.recurring_start_date
+			while (
+				((not ride.recurring_end_date) or (ride.recurring_next_date <= ride.recurring_end_date)) 
+				 and (datetime.strptime(ride.recurring_next_date,"%Y-%m-%d") - datetime.now()) < timedelta(days=ride.recurring_offset)
+				 ):
+#				t=datetime.strptime(ride.recurring_next_date + " " + ride.recurring_departure_time,"%Y-%m-%d %H:%M")
+#				timez=timezone(self.env.context['tz'])
+#				pdb.set_trace()
+				new=ride.copy({
+#					'datum': ride.recurring_next_date,
+#					'departure_time': ride.recurring_next_date + " " + ride.recurring_departure_time,
+					'parent_id': ride.id,
+					'state': 'planned',
+					})
+				new.datum=ride.recurring_next_date
+				ride.recurring_next_date=time.strftime("%Y-%m-%d", (datetime.strptime(ride.recurring_next_date,"%Y-%m-%d") + timedelta(days=ride.recurring_interval)).timetuple())
 
-#        account_payment_term_obj = self.pool['account.payment.term']
-#        invoice_name = self.partner_id.name
-		
-        # date_due = False
-        # if partner.property_payment_term:
-        #     pterm_list = account_payment_term_obj.compute(cr, uid,
-        #             partner.property_payment_term.id, value=1,
-        #             date_ref=time.strftime('%Y-%m-%d'))
-        #     if pterm_list:
-        #         pterm_list = [line[0] for line in pterm_list]
-        #         pterm_list.sort()
-        #         date_due = pterm_list[-1]
+
 
 
 	@api.multi
