@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="ir_hertsens_dow_monday" model="hertsens.dow">
+            <field name="name">Monday</field>
+            <field name="day_number">1</field>
+        </record>
+        <record id="ir_hertsens_dow_tuesday" model="hertsens.dow">
+            <field name="name">Tuesday</field>
+            <field name="day_number">2</field>
+        </record>
+        <record id="ir_hertsens_dow_wednesday" model="hertsens.dow">
+            <field name="name">Wednesday</field>
+            <field name="day_number">3</field>
+        </record>
+        <record id="ir_hertsens_dow_thursday" model="hertsens.dow">
+            <field name="name">Thursday</field>
+            <field name="day_number">4</field>
+        </record>
+        <record id="ir_hertsens_dow_friday" model="hertsens.dow">
+            <field name="name">Friday</field>
+            <field name="day_number">5</field>
+        </record>
+        <record id="ir_hertsens_dow_saturday" model="hertsens.dow">
+            <field name="name">Saturday</field>
+            <field name="day_number">6</field>
+        </record>
+        <record id="ir_hertsens_dow_sunday" model="hertsens.dow">
+            <field name="name">Sunday</field>
+            <field name="day_number">7</field>
+        </record>
+    </data>
+</openerp>

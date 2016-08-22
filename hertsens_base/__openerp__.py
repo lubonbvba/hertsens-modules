@@ -17,7 +17,7 @@
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
     'category': 'Hertsens',
-    'version': '0.10',
+    'version': '0.11',
 
     # any module necessary for this one to work correctly
     'depends': ['base','account', ],
@@ -31,6 +31,7 @@
 #	'static/src/css/lubon_base.css',
     'templates.xml',
     'data/hertsens_cron.xml',
+    'data/hertsens_dow.xml',
 	'views/hertsens_base.xml',
 	'views/hertsens_partners.xml',
     'views/hertsens_menu.xml',

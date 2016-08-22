@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-21 08:17+0000\n"
-"PO-Revision-Date: 2016-08-21 10:29+0200\n"
+"POT-Creation-Date: 2016-08-22 15:00+0000\n"
+"PO-Revision-Date: 2016-08-22 17:11+0200\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: \n"
-"Language: en\n"
+"Language: nl_BE\n"
 "X-Generator: Poedit 1.8.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: hertsens_base
 #: field:res.users,task_count:0
@@ -63,7 +63,7 @@ msgid "Amount"
 msgstr "Bedrag"
 
 #. module: hertsens_base
-#: code:addons/hertsens_base/hertsens.py:282
+#: code:addons/hertsens_base/hertsens.py:296
 #, python-format
 msgid "Annuleren onmogelijk in deze factuurstatus."
 msgstr "Annuleren onmogelijk in deze factuurstatus."
@@ -165,6 +165,7 @@ msgid "Companies that refers to partner"
 msgstr "Companies that refers to partner"
 
 #. module: hertsens_base
+#: view:hertsens.rit:hertsens_base.ritten_form_view
 #: view:hertsens.rit:hertsens_base.ritten_search_view
 #: field:hertsens.rit,company_id:0
 msgid "Company"
@@ -183,7 +184,7 @@ msgstr "Volledig"
 #. module: hertsens_base
 #: field:res.users,contract_ids:0 field:res.users,contracts_count:0
 msgid "Contracts"
-msgstr "Contracts"
+msgstr "Contracten"
 
 #. module: hertsens_base
 #: view:hertsens.invoice.create:hertsens_base.view_hertsens_invoice_create_form
@@ -192,19 +193,21 @@ msgid "Create Invoice"
 msgstr "Factuur maken"
 
 #. module: hertsens_base
-#: field:hertsens.destination,create_uid:0
+#: field:hertsens.destination,create_uid:0 field:hertsens.dow,create_uid:0
 #: field:hertsens.invoice.create,create_uid:0 field:hertsens.rit,create_uid:0
 msgid "Created by"
 msgstr "Created by"
 
 #. module: hertsens_base
-#: field:hertsens.destination,create_date:0
+#: field:hertsens.destination,create_date:0 field:hertsens.dow,create_date:0
 #: field:hertsens.invoice.create,create_date:0 field:hertsens.rit,create_date:0
 msgid "Created on"
 msgstr "Created on"
 
 #. module: hertsens_base
+#: view:hertsens.rit:hertsens_base.ritten_form_view
 #: view:hertsens.rit:hertsens_base.ritten_search_view
+#: view:hertsens.rit:hertsens_base.ritten_tree_view
 #: field:hertsens.rit,partner_id:0
 msgid "Customer"
 msgstr "Klant"
@@ -250,9 +253,19 @@ msgid "Datum"
 msgstr "Datum"
 
 #. module: hertsens_base
+#: field:hertsens.dow,day_number:0
+msgid "Day number"
+msgstr "Dag nummer"
+
+#. module: hertsens_base
+#: model:ir.model,name:hertsens_base.model_hertsens_dow
+msgid "Day of week"
+msgstr ""
+
+#. module: hertsens_base
 #: selection:hertsens.rit,recurring_interval_type:0
 msgid "Days"
-msgstr "Days"
+msgstr "Dagen"
 
 #. module: hertsens_base
 #: help:res.users,property_in_inv_acc:0
@@ -267,7 +280,7 @@ msgstr "Default Account on outgoing Invoices."
 #. module: hertsens_base
 #: field:hertsens.rit,departure_time:0
 msgid "Departure time"
-msgstr "Departure time"
+msgstr "Vertrek tijd"
 
 #. module: hertsens_base
 #: view:website:account.report_invoice_document
@@ -290,11 +303,6 @@ msgid "Destination ids"
 msgstr "Destination ids"
 
 #. module: hertsens_base
-#: view:hertsens.rit:hertsens_base.ritten_form_view
-msgid "Destinations"
-msgstr "Bestemmingen"
-
-#. module: hertsens_base
 #: field:res.partner,diesel:0 field:res.users,diesel:0
 msgid "Diesel"
 msgstr "Diesel"
@@ -315,11 +323,11 @@ msgid "Dispatched"
 msgstr "Dispatched"
 
 #. module: hertsens_base
-#: field:hertsens.destination,display_name:0
+#: field:hertsens.destination,display_name:0 field:hertsens.dow,display_name:0
 #: field:hertsens.invoice.create,display_name:0
 #: field:hertsens.rit,display_name:0
 msgid "Display Name"
-msgstr "Display Name"
+msgstr "Getoonde naam"
 
 #. module: hertsens_base
 #: view:hertsens.invoice.create:hertsens_base.view_hertsens_invoice_create_form
@@ -396,8 +404,8 @@ msgid "Hertsens access rights"
 msgstr "Hertsens access rights"
 
 #. module: hertsens_base
-#: field:hertsens.destination,id:0 field:hertsens.invoice.create,id:0
-#: field:hertsens.rit,id:0
+#: field:hertsens.destination,id:0 field:hertsens.dow,id:0
+#: field:hertsens.invoice.create,id:0 field:hertsens.rit,id:0
 msgid "ID"
 msgstr "ID"
 
@@ -460,7 +468,7 @@ msgid "Invoiced"
 msgstr "Gefactureerd"
 
 #. module: hertsens_base
-#: code:addons/hertsens_base/hertsens.py:364
+#: code:addons/hertsens_base/hertsens.py:378
 #: model:ir.ui.menu,name:hertsens_base.hertsens_invoices_menu
 #: field:res.users,invoice_ids:0
 #, python-format
@@ -531,19 +539,20 @@ msgstr "Kosten z btw"
 
 #. module: hertsens_base
 #: field:hertsens.destination,__last_update:0
+#: field:hertsens.dow,__last_update:0
 #: field:hertsens.invoice.create,__last_update:0
 #: field:hertsens.rit,__last_update:0
 msgid "Last Modified on"
 msgstr "Last Modified on"
 
 #. module: hertsens_base
-#: field:hertsens.destination,write_uid:0
+#: field:hertsens.destination,write_uid:0 field:hertsens.dow,write_uid:0
 #: field:hertsens.invoice.create,write_uid:0 field:hertsens.rit,write_uid:0
 msgid "Last Updated by"
 msgstr "Last Updated by"
 
 #. module: hertsens_base
-#: field:hertsens.destination,write_date:0
+#: field:hertsens.destination,write_date:0 field:hertsens.dow,write_date:0
 #: field:hertsens.invoice.create,write_date:0 field:hertsens.rit,write_date:0
 msgid "Last Updated on"
 msgstr "Last Updated on"
@@ -552,6 +561,11 @@ msgstr "Last Updated on"
 #: field:res.users,last_reconciliation_date:0
 msgid "Latest Full Reconciliation Date"
 msgstr "Latest Full Reconciliation Date"
+
+#. module: hertsens_base
+#: field:hertsens.dow,name:0
+msgid "Name"
+msgstr "Name"
 
 #. module: hertsens_base
 #: help:hertsens.rit,recurring_next_date:0
@@ -702,9 +716,19 @@ msgid "Recurrency settings"
 msgstr "Herhalingen "
 
 #. module: hertsens_base
+#: view:hertsens.rit:hertsens_base.ritten_search_view
+msgid "Recurring"
+msgstr "Herhalend"
+
+#. module: hertsens_base
 #: field:hertsens.rit,recurring_active:0
 msgid "Recurring active"
 msgstr "Herhaling actief?"
+
+#. module: hertsens_base
+#: field:hertsens.rit,recurring_active_days:0
+msgid "Recurring active days"
+msgstr "Herhaling actief op"
 
 #. module: hertsens_base
 #: field:hertsens.rit,recurring_departure_time:0
@@ -1045,7 +1069,7 @@ msgstr "Total Receivable"
 #. module: hertsens_base
 #: view:website:account.report_invoice_document
 msgid "Total Without Taxes"
-msgstr "Totaal excl. btw. 503"
+msgstr "Totaal excl. btw. "
 
 #. module: hertsens_base
 #: help:res.users,credit:0

@@ -212,9 +212,10 @@
                      <field name="recurring_interval_type" />
                      <field name="recurring_offset" />
                      <field name="recurring_next_date"/>
+                     <field name="recurring_active_days" widget="many2many_checkboxes" attrs="{'invisible':[('recurring_interval','!=',1)]}"/>
                  </group>
                  <group>
-                    <!--button name="check_recurrent_rides" type="object" string="test"/ -->
+ <!--                    <button name="check_recurrent_rides" type="object" string="test"/> -->
                 </group>
             </group>
         </page>

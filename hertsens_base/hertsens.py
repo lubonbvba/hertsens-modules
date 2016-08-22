@@ -55,6 +55,7 @@ class hertsens_rit(models.Model):
 	recurring_interval_type=fields.Selection([('days','Days')], default='days',copy=False)
 	recurring_offset=fields.Integer(default=7,help="Number of days before the departure time to make the dispatch record", copy=False)
 	recurring_next_date=fields.Date(string='Next ride to be planned', help="Next planned date",copy=False)	
+	recurring_active_days=fields.Many2many('hertsens.dow')
 	parent_id=fields.Many2one('hertsens.rit', copy=False)
 	child_ids=fields.One2many('hertsens.rit', 'parent_id')
 
@@ -164,7 +165,6 @@ class hertsens_rit(models.Model):
 				 ):
 #				t=datetime.strptime(ride.recurring_next_date + " " + ride.recurring_departure_time,"%Y-%m-%d %H:%M")
 #				timez=timezone(self.env.context['tz'])
-#				pdb.set_trace()
 				new=ride.copy({
 #					'datum': ride.recurring_next_date,
 #					'departure_time': ride.recurring_next_date + " " + ride.recurring_departure_time,
@@ -172,7 +172,22 @@ class hertsens_rit(models.Model):
 					'state': 'planned',
 					})
 				new.datum=ride.recurring_next_date
-				ride.recurring_next_date=time.strftime("%Y-%m-%d", (datetime.strptime(ride.recurring_next_date,"%Y-%m-%d") + timedelta(days=ride.recurring_interval)).timetuple())
+				if ride.recurring_interval != 1:
+					ride.recurring_next_date=time.strftime("%Y-%m-%d", (datetime.strptime(ride.recurring_next_date,"%Y-%m-%d") + timedelta(days=ride.recurring_interval)).timetuple())
+				else:
+					days=[]
+					#create list with days the ride needs to be executed
+					for day in ride.recurring_active_days:
+						days.append(day.day_number)
+					next_date=datetime.strptime(ride.recurring_next_date,"%Y-%m-%d")
+					next_date +=timedelta(days=ride.recurring_interval)
+					while next_date.isoweekday() not in days:
+						next_date +=timedelta(days=ride.recurring_interval)
+					ride.recurring_next_date=time.strftime("%Y-%m-%d", next_date.timetuple())	
+					
+
+
+
 
 
 
@@ -363,3 +378,9 @@ class hertsens_invoice_create(models.TransientModel):
 #		act_win['domain'] = [('type','=','out_invoice')]
 		act_win['name'] = _('Invoices')
 		return act_win
+
+class hertsens_dow(models.Model):
+	_name="hertsens.dow"
+	_description="Day of week"
+	name=fields.Char(String="Full day name")
+	day_number=fields.Integer()
