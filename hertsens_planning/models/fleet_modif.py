@@ -2,7 +2,10 @@
 
 from openerp import models, fields, api
 import pdb
+import openerp
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class fleet_vehicle_type(models.Model):
 	_name="fleet.vehicle.type"
@@ -52,6 +55,32 @@ class fleet_vehicle(models.Model):
 			})
 		new_vehicle.project_id=new_project.id
 		return new_vehicle
+
+	@api.multi
+	def write(self,vals=None):
+
+		if 'license_plate' in vals.keys():
+			self.project_id.write({'name':self.license_plate})
+		if 'vehicle_type_id' in vals.keys():
+			self.project_id.write({'name':self.vehicle_type_id.id})
+			
+		return super(fleet_vehicle,self).write(vals)
+
+
+	@api.multi
+	def _migrate(self):
+		_logger.info("Updating vehicle names..")
+
+		records=self.env['fleet.vehicle'].search([])
+		#pdb.set_trace()
+		for record in records:
+			record.project_id.write({'name': record.license_plate})
+#			pdb.set_trace()
+
+
+	def init(self,cr):
+		self._migrate(cr, openerp.SUPERUSER_ID,[],{})
+
 
 	# @api.one
 	# def write(self,vals):
