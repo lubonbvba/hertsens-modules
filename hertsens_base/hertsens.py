@@ -154,9 +154,10 @@ class hertsens_rit(models.Model):
 
 	@api.multi
 	def check_recurrent_rides(self):
-		_logger.info('Recurrent rides planner')
+		_logger.info('Start recurrent rides planner')
 		rides = self.search([('is_recurring',"=",True),('recurring_active',"=",True)])
 		for ride in rides:
+			_logger.info('Processing ride: %d' % ride.id)
 			if not ride.recurring_next_date:
 				ride.recurring_next_date=ride.recurring_start_date
 			while (
@@ -184,7 +185,7 @@ class hertsens_rit(models.Model):
 					while next_date.isoweekday() not in days:
 						next_date +=timedelta(days=ride.recurring_interval)
 					ride.recurring_next_date=time.strftime("%Y-%m-%d", next_date.timetuple())	
-					
+		_logger.info('End recurrent rides planner')					
 
 
 

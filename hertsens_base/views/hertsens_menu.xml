@@ -148,8 +148,9 @@
     <field name="arch" type="xml">
         <tree string="Ritten Tree" editable="top" default_order="datum desc"  colors="blue:state == 'planned';black:state in ('completed');red:state=='waiting';green:state=='toinvoice';gray:state == 'invoiced'"  >
            <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/> 
+           <field name="id" options="{'no_quick_create':True,'no_create_edit':True}"/>
            <field name="company_id" invisible="True" options="{'no_quick_create':True,'no_create_edit':True}"/>
-           <field name="datum" required="True" attrs="{'readonly': [('state', '=', 'invoiced')],'required':[('is_recurring','=',False)]}"/>
+           <field name="datum" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)],'required':[('is_recurring','=',False)]}"/>
            <field name="define_departure_time"/>
            <field name="departure_time" attrs="{'readonly':[('define_departure_time','=',False)]}" />
 
@@ -157,13 +158,13 @@
            <field name="bestemming" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="refklant" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
            <field name="ritprijs" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
-           <field name="wachttijd" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
+           <field name="wachttijd" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}" />
            <field name="total_ride_price" sum="Total" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
-           <field name="charges_vat" sum="Total" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
-           <field name="charges_exvat" sum="Total" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
-           <field name="finished" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
-           <field name="cmr"  attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
-           <field name="state" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
+           <field name="charges_vat" sum="Total" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
+           <field name="charges_exvat" sum="Total" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
+           <field name="finished" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
+           <field name="cmr"  attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
+           <field name="state" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}" />
            <field name="is_recurring" readonly="True" />
        </tree>
    </field>
@@ -179,7 +180,7 @@
           </header>
           <group>
             <group>
-                <field name="is_recurring"/>"
+                <field name="is_recurring" />"
                 <field name="company_id" string="Company" options="{'no_quick_create':True,'no_create_edit':True}" invisible="True" />
                 <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
 
