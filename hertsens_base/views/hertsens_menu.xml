@@ -242,7 +242,7 @@
     <field name="model">hertsens.rit</field>
     <field name="arch" type="xml">
         <search string="Search Ritten">
-         <field name="cmr" string="CMR, Ref, vertrek, bestemming" filter_domain="['|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self)]"/>   
+         <field name="cmr" string="CMR, Ref, vertrek, bestemming, ID" filter_domain="['|','|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self),('id','=',self)]"/>   
          <filter name="active" string="Active" domain="[('state','in',['quoted','planned','completed','waiting'])]" help="Active "/>
          <filter name="planned" string="Planned" domain="[('state','=','planned')]" help="Planned "/>
          <filter name="waiting" string="Waiting" domain="[('state','=','waiting')]" help="Waiting "/>
