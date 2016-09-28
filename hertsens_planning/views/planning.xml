@@ -9,6 +9,7 @@
 					<group>
 						<group>
 							<field name="id" />
+							<field name="ride_id_num" readonly="True" />
 							<field name="partner_id" readonly="True"/>
 							<field name="ride_id" readonly="True" context="{'detailed':1}"/>
 							<field name="vehicle_type_id" readonly="True"/>

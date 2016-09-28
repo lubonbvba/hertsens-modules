@@ -8,6 +8,7 @@ import pdb
 class vehicle_planning_wizard(models.TransientModel):
 	_name="vehicle.planning.wizard"
 	ride_id=fields.Many2one('hertsens.rit', string="ride")
+	ride_id_num=fields.Integer(string="Ride ID")
 	project_id=fields.Many2one('project.project', string="Vehicle")
 	partner_id=fields.Many2one('res.partner', string="Customer")
 	task_id=fields.Many2many('project.task')

@@ -147,8 +147,8 @@
 
     <field name="arch" type="xml">
         <tree string="Ritten Tree" editable="top" default_order="datum desc"  colors="blue:state == 'planned';black:state in ('completed');red:state=='waiting';green:state=='toinvoice';gray:state == 'invoiced'"  >
-           <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/> 
            <field name="id" options="{'no_quick_create':True,'no_create_edit':True}"/>
+           <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/> 
            <field name="company_id" invisible="True" options="{'no_quick_create':True,'no_create_edit':True}"/>
            <field name="datum" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)],'required':[('is_recurring','=',False)]}"/>
            <field name="define_departure_time"/>
@@ -180,6 +180,7 @@
           </header>
           <group>
             <group>
+                <field name="id" />"
                 <field name="is_recurring" />"
                 <field name="company_id" string="Company" options="{'no_quick_create':True,'no_create_edit':True}" invisible="True" />
                 <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
@@ -242,7 +243,8 @@
     <field name="model">hertsens.rit</field>
     <field name="arch" type="xml">
         <search string="Search Ritten">
-         <field name="cmr" string="CMR, Ref, vertrek, bestemming, ID" filter_domain="['|','|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self),('id','=',self)]"/>   
+         <field name="cmr" string="CMR, Ref, vertrek, bestemming" filter_domain="['|','|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self)]"/>
+         <field name="id" string="ID" filter_domain="[('id','=',self)]"/>               
          <filter name="active" string="Active" domain="[('state','in',['quoted','planned','completed','waiting'])]" help="Active "/>
          <filter name="planned" string="Planned" domain="[('state','=','planned')]" help="Planned "/>
          <filter name="waiting" string="Waiting" domain="[('state','=','waiting')]" help="Waiting "/>

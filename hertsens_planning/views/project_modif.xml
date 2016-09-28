@@ -7,6 +7,7 @@
 			<field name="model">hertsens.rit</field>
 			<field name="arch" type="xml">
 				<tree string="Rides to dispatch" default_order="departure_time">
+					<!-- field name="id"/ -->
 					<field name="departure_time"/>
 					<field name="define_departure_time"/>
 					<field name="datum"/>
@@ -29,6 +30,7 @@
 						<button name="dispatch_wizard" string="Dispatch" type="object"/>
 					</header>
 					<group>
+						<field name="id"/>
 						<field name="define_departure_time"/>
 						<field name="departure_time"/>
 						<field name="datum"/>
