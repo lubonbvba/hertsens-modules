@@ -12,7 +12,9 @@ class hertsens_rit(models.Model):
 
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
 	task_ids=fields.One2many('project.task','ride_id')
-	
+#	driver_id=fields.Many2one('res.users')
+	driver_id=fields.Many2one('hr.employee')
+	vehicle_id=fields.Many2one("fleet.vehicle")
 	@api.one
 	def name_get(self):
 		name=(self.vertrek or "") + " - " + (self.bestemming or "")
@@ -38,8 +40,19 @@ class hertsens_rit(models.Model):
   #       	     " WHERE departure_time IS NULL")
 		# for datum, departure_time 
 		#pdb.set_trace()
-
-
+	@api.multi
+	def dispatch_ride(self):
+		#pdb.set_trace()
+		return {
+                 'name': 'Individual SMS Compose',
+                 'view_type': 'form',
+                 'view_mode': 'form',
+                 'res_model': 'esms.compose',
+                 'target': 'new',
+                 'type': 'ir.actions.act_window',
+#                 'context': {'default_field_id':'mobile','default_to_number':self.driver_id.mobile_phone, 'default_record_id':self.env.context['active_id'],'default_model_id':'res.partner'}
+                 'context': {'default_field_id':'mobile','default_to_number':self.driver_id.mobile_phone,'default_model_id':'hertsens.rit','default_record_id':self.id , 'default_template_id':1}
+            }
 	@api.multi	
 	def dispatch_wizard(self):
 		#pdb.set_trace()

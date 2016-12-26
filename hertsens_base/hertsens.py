@@ -36,6 +36,7 @@ class hertsens_rit(models.Model):
 	define_departure_time=fields.Boolean(string='VL', help="Voorladen")
 	wachttijd=fields.Float(help="Prijs wachttijd")
 	ritprijs=fields.Float()
+	remarks=fields.Text(help="Info om mee te sturen bij dispatch")
 	vertrek=fields.Char(help="Vertrek plaats")
 	bestemming=fields.Char(help="Bestemming plaats")
 	refklant=fields.Char(string="Ref", help="Referentie opgegeven door klant")

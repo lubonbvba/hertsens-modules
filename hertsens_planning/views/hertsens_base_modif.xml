@@ -22,6 +22,13 @@
 				<field name="partner_id" position="after">
 					<field name="vehicle_type_id" required="True"/>
 				</field>
+				<group name="remarks" position="after">
+					<group>
+						<field name="driver_id"/>
+						<field name="vehicle_id"/>
+						<button name="dispatch_ride" type="object" string="sms"/>
+					</group>
+				</group>
 
 			</field>
 		</record>

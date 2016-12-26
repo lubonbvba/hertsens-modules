@@ -89,7 +89,7 @@ class planning_vehicles(models.TransientModel):
 			'ride_id': self.vehicle_planning_wizard_id.ride_id.id,
 			'project_id': self.project_id.id,
 			'driver_id': self.project_id.driver_id.id,
-			'dispatch_message': "V: %s\nVan: %s\nNaar: %s\nOK?" % (self.project_id.name, self.vehicle_planning_wizard_id.ride_id.vertrek,self.vehicle_planning_wizard_id.ride_id.bestemming),
+			'dispatch_message': "ID: %d\nV: %s\nVan: %s\nNaar: %s\nOK?" % (self.vehicle_planning_wizard_id.ride_id.id,self.project_id.name, self.vehicle_planning_wizard_id.ride_id.vertrek,self.vehicle_planning_wizard_id.ride_id.bestemming),
 			})
 		dispatch_wizard.driver_mobile=str(self.project_id.driver_id.employee_ids.mobile_phone)
 		dispatch_wizard.partner_id=dispatch_wizard.ride_id.partner_id
@@ -120,7 +120,7 @@ class vehicle_dispatch_wizard(models.TransientModel):
 	driver_mobile=fields.Char()
 	dispatch_message=fields.Text(size=160)
 	partner_id=fields.Many2one('res.partner', string="Customer")
-
+	answer_timeout=fields.Integer(default=3600,help="Time in seconds to answser")
 	@api.onchange('driver_id')
 	@api.one
 	def change_mobile(self):
@@ -171,7 +171,7 @@ class vehicle_dispatch_wizard(models.TransientModel):
 			'state':'dispatched',
 			})
 		#create task
-		self.env['project.task'].create({
+		task=self.env['project.task'].create({
 			'name': self.ride_id.name_get()[0][1].encode("utf8"),
 			'project_id': self.project_id.id,
 			'user_id': self.driver_id.id,
@@ -180,4 +180,18 @@ class vehicle_dispatch_wizard(models.TransientModel):
 			'description': self.dispatch_message,
 			'date_start':	fields.Datetime.now()
 			})
+		sms_sender=self.env['res.users'].browse(self.env.context['uid']).company_id.esms_default_sender
+		sms_account=sms_sender.account_id
+		sms_gateway=self.env[sms_account.gateway_model]
+		sms=sms_gateway.send_message( 
+			sms_gateway_id=sms_account.id,
+			from_number=sms_sender.mobile_number,
+			to_number=self.driver_mobile,
+			sms_content=self.dispatch_message,
+			my_model_name='project.task',
+			my_record_id=task.id,
+			my_field_name='name',
+			answer_timeout=self.answer_timeout)
+
+
 
