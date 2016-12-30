@@ -24,6 +24,7 @@ _logger = logging.getLogger(__name__)
 
 class hertsens_rit(models.Model):
 	_name="hertsens.rit"
+	_inherit="mail.thread"
 #	_inherits= {"account.analytic.line":"line_id"}
 	_order = "datum desc"
 
@@ -106,6 +107,12 @@ class hertsens_rit(models.Model):
 		#pdb.set_trace()
 		if 'datum' in vals.keys():
 			vals['departure_time']=self._calculate_departure_time(vals['datum'])
+		if 'remarks' in vals.keys():
+			#pdb.set_trace()
+			vals['remarks']=''.join([i if ord(i) < 128 else ' ' for i in vals['remarks']])
+			vals['remarks']=''.join([i if ord(i) not in [34,39] else ' ' for i in vals['remarks']])
+			
+	
 
 		super(hertsens_rit,self).write(vals)
 

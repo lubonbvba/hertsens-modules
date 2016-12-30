@@ -26,7 +26,8 @@
 					<group>
 						<field name="driver_id"/>
 						<field name="vehicle_id"/>
-						<button name="dispatch_ride" type="object" string="sms"/>
+						<field name="last_msg"/>
+						<button name="dispatch_ride" type="object" string="sms" />
 					</group>
 				</group>
 

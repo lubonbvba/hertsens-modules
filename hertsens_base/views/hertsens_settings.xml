@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <record id="hertsens_config_settings" model="ir.ui.view">
+            <field name="name">hertsens.config.settings</field>
+            <field name="model">hertsens.config.settings</field>
+            <field name="arch" type="xml">
+                <form string="Credential Settings" class="oe_form_configuration">
+                    <header>
+                        <button string="Apply" type="object" name="execute" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                    </header>
+                    <group>
+                        <field name="follower_id"/>
+                        <field name="follower_value"/>
+                        <field name="message_template_id"/>
+
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_credentials_config_settings" model="ir.actions.act_window">
+            <field name="name">Hertsens Settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hertsens.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
+        <menuitem action="action_credentials_config_settings"
+                  name="Hertsens Settings"
+                  id="hertsens_config_settings_menu"
+                  parent="base.menu_config" />
+               <!--   groups="base.group_no_one"/> -->
+
+    </data>
+</openerp>

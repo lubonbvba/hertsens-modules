@@ -15,6 +15,8 @@ class hertsens_rit(models.Model):
 #	driver_id=fields.Many2one('res.users')
 	driver_id=fields.Many2one('hr.employee')
 	vehicle_id=fields.Many2one("fleet.vehicle")
+	last_msg=fields.Char()
+
 	@api.one
 	def name_get(self):
 		name=(self.vertrek or "") + " - " + (self.bestemming or "")
@@ -43,6 +45,7 @@ class hertsens_rit(models.Model):
 	@api.multi
 	def dispatch_ride(self):
 		#pdb.set_trace()
+		self.last_msg=self.driver_id.mobile_phone
 		return {
                  'name': 'Individual SMS Compose',
                  'view_type': 'form',
@@ -51,7 +54,7 @@ class hertsens_rit(models.Model):
                  'target': 'new',
                  'type': 'ir.actions.act_window',
 #                 'context': {'default_field_id':'mobile','default_to_number':self.driver_id.mobile_phone, 'default_record_id':self.env.context['active_id'],'default_model_id':'res.partner'}
-                 'context': {'default_field_id':'mobile','default_to_number':self.driver_id.mobile_phone,'default_model_id':'hertsens.rit','default_record_id':self.id , 'default_template_id':1}
+                 'context': {'default_field_id':'mobile','default_to_number':self.driver_id.mobile_phone ,'default_model_id':'hertsens.rit','default_record_id':self.id , 'default_template_id':1}
             }
 	@api.multi	
 	def dispatch_wizard(self):

@@ -178,6 +178,7 @@
            <header>
               <field name="state" widget="statusbar"/>
           </header>
+          <sheet>
           <group>
             <group>
                 <field name="id" />"
@@ -196,6 +197,7 @@
              <field name="wachttijd" />
              <field name="charges_vat" />
              <field name="charges_exvat" />
+             <field name="finished" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
              <field name="cmr" />
              <field name="state" />
              <field name="invoice_id" domain="[('partner_id','=',partner_id)]" />
@@ -236,7 +238,13 @@
        </field>
    </page> -->
 </notebook>
+                                    </sheet>
+                        <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        </div>
 </form>
+
 </field>
 </record>
 
