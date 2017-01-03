@@ -43,30 +43,8 @@ class esms_compose(models.Model):
     	new_rec = super(esms_compose, self).send_entity()
         #pdb.set_trace()
         if self.model_id == 'hertsens.rit':
-            mobile_e164=calc_e164(self.to_number)
-            last_ride=self.env[self.model_id].search([('last_msg','=',mobile_e164)])
-            for rit in last_ride:
-                rit.last_msg=""
-            rit=self.env[self.model_id].browse(self.record_id)
-            rit.last_msg=mobile_e164
-            rit.message_post(body=self.sms_content,
-                 subject="Rit: " + str(rit.id) + "," + rit.display_name + " Drv: " + rit.driver_id.name,
-                 type = 'comment',
-                 #subtype = "mail.mt_comment"
-                 )
-            rit.message_subscribe_users(user_ids=62)
+            self.env[self.model_id].browse(self.record_id).set_last_msg(self.to_number,self.sms_content)
+
         return new_rec
 
-
-def calc_e164(number,country="32"):
-    mobile_e164=""
-    if number.startswith("00"):
-        mobile_e164 = "+" + number[2:]
-    elif number.startswith("0"):
-        mobile_e164 = "+" + country + number[1:]
-    elif number.startswith("+"):
-        mobile_e164 = number
-    else:
-        mobile_e164 = "+" + country + number
-    return mobile_e164
 

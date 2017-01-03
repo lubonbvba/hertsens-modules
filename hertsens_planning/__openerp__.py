@@ -16,10 +16,10 @@
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
     'category': 'Hertsens',
-    'version': '0.15',
+    'version': '0.17',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'hertsens_base', 'project', 'fleet','hr'],
+    'depends': ['base', 'hertsens_base', 'project', 'fleet','hr', 'entity_sms'],
 
     # always loaded
     'data': [

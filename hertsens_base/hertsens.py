@@ -107,10 +107,8 @@ class hertsens_rit(models.Model):
 		#pdb.set_trace()
 		if 'datum' in vals.keys():
 			vals['departure_time']=self._calculate_departure_time(vals['datum'])
-		if 'remarks' in vals.keys():
-			#pdb.set_trace()
-			vals['remarks']=''.join([i if ord(i) < 128 else ' ' for i in vals['remarks']])
-			vals['remarks']=''.join([i if ord(i) not in [34,39] else ' ' for i in vals['remarks']])
+#		if 'remarks' in vals.keys():
+
 			
 	
 

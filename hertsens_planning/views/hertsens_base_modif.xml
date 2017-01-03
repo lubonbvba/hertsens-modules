@@ -7,7 +7,22 @@
 			<field name="inherit_id" ref="hertsens_base.ritten_tree_view"/>
 			<field name="arch" type="xml">
 				<field name="ritprijs" position="after">
+					<field name='last_msg'/>
 					<field name="vehicle_type_id" required="True" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
+				</field>
+
+			</field>
+		</record>
+	</data>
+	<data>
+			<record model="ir.ui.view" id="hertsens_planning.ritten_search_view">
+			<field name="name">hertsens_planning.ritten_search_view</field>
+			<field name="model">hertsens.rit</field>
+			<field name="inherit_id" ref="hertsens_base.ritten_search_view"/>
+			<field name="arch" type="xml">
+				         <field name="id" position="after">  
+				         <field name="last_msg" string="Last message" filter_domain="[('last_msg','ilike',self)]"/>  
+
 				</field>
 
 			</field>
@@ -26,8 +41,12 @@
 					<group>
 						<field name="driver_id"/>
 						<field name="vehicle_id"/>
-						<field name="last_msg"/>
-						<button name="dispatch_ride" type="object" string="sms" />
+						<field name="last_msg" invisible='1'/>
+						<field name="last_msg_display" readonly='1'/>
+						<button name="dispatch_ride" type="object" string="SMS" help="Toewijzen met SMS"/>
+						<button name="dispatch_ride_silent" type="object" string="Wijs toe, zonder SMS" help="Deze button geeft de mogelijkheid om een rit die bv mondeling toegewezen is mee in het tracking systeem te zetten." />
+						<button name="clr_last_msg" type="object" string="CLR" help="Last msg clearen"/>
+
 					</group>
 				</group>
 
