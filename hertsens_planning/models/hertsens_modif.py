@@ -121,7 +121,7 @@ class hertsens_rit(models.Model):
 		mobile_e164=calc_e164(to_number)
 		last_ride=self.search([('last_msg','=',mobile_e164)])
 		for rit in last_ride:
-			rit.sudo().last_msg=""
+			rit.sudo().last_msg=None
 		#pdb.set_trace()
 		self.last_msg=mobile_e164
 		self.message_post(body=body,
