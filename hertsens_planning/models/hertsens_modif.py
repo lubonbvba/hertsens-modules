@@ -25,7 +25,7 @@ class hertsens_rit(models.Model):
 	@api.depends('last_msg')
 	def _compute_last_msg_display(self):
 		for rec in self:
-			self.last_msg_display=self.last_msg
+			rec.last_msg_display=rec.last_msg
 
 
 	@api.one

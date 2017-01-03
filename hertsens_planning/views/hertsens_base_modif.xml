@@ -7,10 +7,8 @@
 			<field name="inherit_id" ref="hertsens_base.ritten_tree_view"/>
 			<field name="arch" type="xml">
 				<field name="ritprijs" position="after">
-					<field name='last_msg'/>
 					<field name="vehicle_type_id" required="True" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
 				</field>
-
 			</field>
 		</record>
 	</data>
