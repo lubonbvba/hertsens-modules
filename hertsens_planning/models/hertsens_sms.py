@@ -14,18 +14,19 @@ class EsmsHistory(models.Model):
     @api.model
     def create(self, values):
         new_rec = super(EsmsHistory, self).create(values)
-        last_ride=self.env["hertsens.rit"].search([('last_msg','=',new_rec.from_mobile)])
-        if last_ride:
-            last_ride.message_post(body=new_rec.sms_content,
-                 subject="Rit: " + str(last_ride.id) + "," + last_ride.display_name + " van: " + (new_rec.partner_id.name or new_rec.from_mobile),
-                 type = 'comment',
-                 subtype = "mail.mt_comment")
-        elif new_rec.direction == 'I':
-            #pdb.set_trace()
-            self.env['res.users'].browse(62).message_post(body=new_rec.sms_content,
-                 subject="Niet toe te wijzen sms van: " + (new_rec.partner_id.name or new_rec.from_mobile),
-                 type = 'comment',
-                 subtype = "mail.mt_comment")
+        if not new_rec.service_message:
+            last_ride=self.env["hertsens.rit"].search([('last_msg','=',new_rec.from_mobile)])
+            if last_ride:
+                last_ride.message_post(body=new_rec.sms_content,
+                     subject="Rit: " + str(last_ride.id) + "," + last_ride.display_name + " van: " + (new_rec.partner_id.name or new_rec.from_mobile),
+                     type = 'comment',
+                     subtype = "mail.mt_comment")
+            elif new_rec.direction == 'I':
+                #pdb.set_trace()
+                self.env['res.users'].browse(62).message_post(body=new_rec.sms_content,
+                     subject="Niet toe te wijzen sms van: " + (new_rec.partner_id.name or new_rec.from_mobile),
+                     type = 'comment',
+                     subtype = "mail.mt_comment")
 
         return new_rec
 
