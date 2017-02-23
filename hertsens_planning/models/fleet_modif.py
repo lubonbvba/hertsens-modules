@@ -79,6 +79,7 @@ class fleet_vehicle(models.Model):
 
 
 	def init(self,cr):
+		#pdb.set_trace()
 		self._migrate(cr, openerp.SUPERUSER_ID,[],{})
 
 

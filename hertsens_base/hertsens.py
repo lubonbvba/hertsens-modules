@@ -159,7 +159,7 @@ class hertsens_rit(models.Model):
 		}
 
 	@api.multi
-	def check_recurrent_rides(self):
+	def check_recurrent_rides(self,dummy=None):
 		_logger.info('Start recurrent rides planner')
 		rides = self.search([('is_recurring',"=",True),('recurring_active',"=",True)])
 		for ride in rides:
@@ -177,6 +177,8 @@ class hertsens_rit(models.Model):
 #					'departure_time': ride.recurring_next_date + " " + ride.recurring_departure_time,
 					'parent_id': ride.id,
 					'state': 'planned',
+					'last_msg': None,
+					'driver_id':None,
 					})
 				new.datum=ride.recurring_next_date
 				if ride.recurring_interval != 1:
