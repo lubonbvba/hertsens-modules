@@ -7,7 +7,7 @@ from datetime import date,datetime,timedelta
 from pytz import timezone
 import time
 import logging
-import pytz
+import pytz,base64
 
 _logger = logging.getLogger(__name__)
 # class account_analytic_line(models.Model):
@@ -289,7 +289,9 @@ class invoice(models.Model):
 	_inherit="account.invoice"
 	rides_ids=fields.One2many( "hertsens.rit" ,"invoice_id")
 	on=fields.Char(required=True,default="on")
-	@api.one
+	rides_csv_data=fields.Binary(readonly=True)
+	rides_csv_save=fields.Char()
+
 	def action_cancel(self,vals=None,context=None):
 		#pdb.set_trace()	
 		# code om te vermijden dat uitgaande facturen worden geannuleerd als er al ritten aanhangen.
@@ -304,6 +306,28 @@ class invoice(models.Model):
 			return super(invoice, self.with_context(from_parent_object=True)).action_cancel()
 		else:
 			raise exceptions.Warning(_("Annuleren onmogelijk in deze factuurstatus."))
+	@api.multi
+	def generate_csv_data(self, context=None):
+		self.rides_csv_save="detail-%s.csv" % self.number
+		self.rides_csv_save=self.rides_csv_save.replace("/","_")
+		#self.rides_csv_file="details"
+		#self.rides_csv_file=base64.encodestring(self.rides_csv_file.encode('utf8'))
+		
+		self.rides_csv_data="date,departure,destination,cmr,ref,price,charges_vat,charges_exvat,total\n"
+		for ride in self.rides_ids:
+			self.rides_csv_data += "%s," % ride.datum
+			self.rides_csv_data += "%s," % ride.vertrek
+			self.rides_csv_data += "%s," % ride.bestemming
+			self.rides_csv_data += "%s," % ride.cmr
+			self.rides_csv_data += "%s," % ride.refklant
+			self.rides_csv_data += "%s," % ride.ritprijs
+			self.rides_csv_data += "%s," % ride.charges_vat
+			self.rides_csv_data += "%s," % ride.charges_exvat
+			self.rides_csv_data += "%s," % ride.total_ride_price
+			self.rides_csv_data += "\n" 
+		self.rides_csv_data=base64.encodestring(self.rides_csv_data.encode('utf-8'))	
+		#pdb.set_trace()
+
 
 class invoice_line(models.Model):
 	_inherit="account.invoice.line"

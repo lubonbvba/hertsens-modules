@@ -59,6 +59,10 @@
             <field name="arch" type="xml">
                 <notebook position="inside">
                     <page string="Rides">
+                        <div>
+                            <button name="generate_csv_data" type="object" String="Make csv"/>
+                            <field name="rides_csv_data" filename="rides_csv_save"/>
+                        </div>
                         <field name="rides_ids" readonly="1">
                             <tree>
                                 <field name="datum"/>
