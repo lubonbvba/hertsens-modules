@@ -292,7 +292,7 @@ class invoice(models.Model):
 	rides_csv_data=fields.Binary(readonly=True)
 	rides_csv_save=fields.Char()
 
-	@api.model
+	@api.multi
 	def action_cancel(self,vals=None,context=None):
 		#pdb.set_trace()	
 		# code om te vermijden dat uitgaande facturen worden geannuleerd als er al ritten aanhangen.
@@ -304,6 +304,8 @@ class invoice(models.Model):
 				#self.env['hertsens.rit']
 				ride.sudo().state='toinvoice'
 				ride.sudo().invoice_id=""
+				self.rides_csv_save=None
+				self.rides_csv_data=None
 			return super(invoice, self.with_context(from_parent_object=True)).action_cancel()
 		else:
 			raise exceptions.Warning(_("Annuleren onmogelijk in deze factuurstatus."))
