@@ -2,12 +2,13 @@
 #from openerp.osv import osv
 from openerp import exceptions,models, fields, api, _
 import csv,os,string,pdb
-from path import path
+#from path import path
 from datetime import date,datetime,timedelta
 from pytz import timezone
 import time
 import logging
 import pytz,base64
+from zeep import Client
 
 _logger = logging.getLogger(__name__)
 # class account_analytic_line(models.Model):
@@ -60,6 +61,8 @@ class hertsens_rit(models.Model):
 	recurring_active_days=fields.Many2many('hertsens.dow')
 	parent_id=fields.Many2one('hertsens.rit', copy=False)
 	child_ids=fields.One2many('hertsens.rit', 'parent_id')
+	origin_partner_id=fields.Many2one('res.partner', string="Origin")
+	destination_partner_id=fields.Many2one('res.partner', string="Destination")
 
 	# @api.onchange('partner_id')
 	# def _checkcompany(self):
@@ -365,12 +368,93 @@ class res_partner(models.Model):
 	ritten_count=fields.Float(compute="_ritten_count")
 	partner_id=fields.Many2one('res.partner', required=True)
 	ride_ids=fields.One2many('hertsens.rit','partner_id')
+	geo_longitude=fields.Float(String="Longitude (X)", digits=(16, 5))
+	geo_latitude=fields.Float(String="Latitude (Y)",digits=(16, 5))
+	geo_name=fields.Char()
+
+	@api.multi
+	def get_geo(self):
+		client = Client("https://fleetft.tx-connect.com/IWSMIX/Service.asmx?wsdl")
+		request_data = {
+			'Login':{'DateTime':datetime.now(),
+				'Version':1,
+				'Language':'EN',
+				'Dispatcher':"LUBON",
+				'Password':"LUBON_0917900048",
+				'SystemNr':"48",
+				'Integrator':"LUBON"
+				},
+			'StreetInfo':{
+				'City':self.city,
+				'PostalCode':self.zip,
+				'Street':self.street,
+			#	'Number':"43",
+				'CountryCode':self.country_id.code,
+				},	
+		}
+		response=client.service.Get_PositionFromStreetInfo(**request_data)
+		self.geo_name=response['Position']['Name']
+		self.geo_latitude=response['Position']['Latitude']
+		self.geo_longitude=response['Position']['Longitude']
+
+
+
 	@api.one
 	def _ritten_count(self):
 		self.ritten_count=0
 		for f in self.ride_ids:
 			self.ritten_count=self.ritten_count+1
-		return 	
+		return 
+
+	@api.multi	
+	def name_get(self):	
+		if 'show_address_line' in self.env.context.keys():
+#			pdb.set_trace()
+			res=[]
+			for partner in self:
+				name=partner.name  
+				if partner.street:
+					name += ", " + partner.street
+				if partner.zip:
+					name += ", " + partner.zip
+				if partner.city:
+					name += ", " + partner.city
+				if partner.country_id:
+					name +=  " (" + partner.country_id.code +")"
+
+				res.append((partner.id,name))
+			#pdb.set_trace()	
+		else:
+			res=super(res_partner, self).name_get()
+		return res
+
+	@api.model
+	def name_search(self, name, args=None, operator='ilike', limit=100 ):
+		if 'show_address_line' in self.env.context.keys():
+			args = args or []
+			recs = self.browse()
+			name_arr=name.split(" ")
+
+			for n in name_arr:
+				#pdb.set_trace()
+				r=None
+				if len(n)>0:
+					r=self.search([('zip', 'ilike', n)])
+					r=r + self.search([('street', 'ilike', n)])
+					r=r + self.search([('name', 'ilike', n)])
+				if not recs:
+					recs=r	
+				if r:
+					recs=recs & r
+
+
+#			if name:
+#				recs = self.search(['|','|',('street', 'ilike', name),('city', 'ilike', name),('zip', 'ilike', name)] + args, limit=limit)
+			if not recs:
+				recs = self.search([('name', operator, name)] + args, limit=limit)
+			return recs.name_get()
+		else:
+			return super(res_partner, self).name_search(name=name, args=args,operator=operator, limit=limit)
 
 class hertsens_invoice_create(models.TransientModel):
 	_name='hertsens.invoice.create'
