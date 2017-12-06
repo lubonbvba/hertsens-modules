@@ -63,7 +63,7 @@ class hertsens_rit(models.Model):
 	child_ids=fields.One2many('hertsens.rit', 'parent_id')
 	origin_partner_id=fields.Many2one('res.partner', string="Origin")
 	destination_partner_id=fields.Many2one('res.partner', string="Destination")
-
+	google_navigation_url=fields.Char(string='Google Nav', compute='_compute_google_navigation_url')
 	# @api.onchange('partner_id')
 	# def _checkcompany(self):
 	# 	self.company_id=self.partner_id.company_id
@@ -74,6 +74,9 @@ class hertsens_rit(models.Model):
 	# 		if ride.state not in ('draft', 'cancel'):
 	# 			raise Warning(_('You cannot delete an invoice which is not draft or cancelled. You should refund it instead.'))
 	# 			return models.Model.unlink(self)
+
+
+
 
 
 	@api.one
@@ -146,6 +149,14 @@ class hertsens_rit(models.Model):
 				self.state='completed'
 			else:
 				self.state='planned'
+
+	@api.depends('origin_partner_id','destination_partner_id')			
+	def _compute_google_navigation_url(self):			
+		for record in self:
+			if record.origin_partner_id.geo_latitude and record.origin_partner_id.geo_longitude and record.destination_partner_id.geo_latitude and record.destination_partner_id.geo_longitude:
+				record.google_navigation_url="https://www.google.com/maps/dir/?api=1"
+				record.google_navigation_url+="&origin="+ str(record.origin_partner_id.geo_latitude) + ','+ str(record.origin_partner_id.geo_longitude)
+				record.google_navigation_url+="&destination="+ str(record.destination_partner_id.geo_latitude) + ','+ str(record.destination_partner_id.geo_longitude)
 
 	@api.multi
 	def _prepare_cost_invoice(self, partner_id):
@@ -285,8 +296,16 @@ class herstens_destination (models.Model):
 
 	
 	destination=fields.Char()
+	ref=fields.Char()
+	remarks=fields.Char()
 	rit_id=fields.Many2one('hertsens.rit')
 	sequence=fields.Integer()
+	place_id=fields.Many2one('res.partner', string="Location")
+
+class User(models.Model):
+    _inherit = 'res.users'
+    operational_mode=fields.Selection([('off','off'),('on','on')], default="off", string="Operational mode", help="If operational mode is on, customers and invoices of all the companies are shown. No accounting actions are possible.")
+
 
 class invoice(models.Model):
 	_inherit="account.invoice"
@@ -360,101 +379,6 @@ class res_company(models.Model):
 	default_charges_vat_product=fields.Many2one('product.product', string="Product charges vat",help="Product to use for charges including vat")
 	default_charges_exvat_product=fields.Many2one('product.product', string="Product charges ex vat", help="Product to use for charges with vat exempt")
 
-class res_partner(models.Model):
-	_inherit= "res.partner"
-
-	ref_required=fields.Boolean(string="Ref required",help="Customer reference mandatory?")
-	diesel=fields.Float(help="Dieseltoeslag")
-	ritten_count=fields.Float(compute="_ritten_count")
-	partner_id=fields.Many2one('res.partner', required=True)
-	ride_ids=fields.One2many('hertsens.rit','partner_id')
-	geo_longitude=fields.Float(String="Longitude (X)", digits=(16, 5))
-	geo_latitude=fields.Float(String="Latitude (Y)",digits=(16, 5))
-	geo_name=fields.Char()
-
-	@api.multi
-	def get_geo(self):
-		client = Client("https://fleetft.tx-connect.com/IWSMIX/Service.asmx?wsdl")
-		request_data = {
-			'Login':{'DateTime':datetime.now(),
-				'Version':1,
-				'Language':'EN',
-				'Dispatcher':"LUBON",
-				'Password':"LUBON_0917900048",
-				'SystemNr':"48",
-				'Integrator':"LUBON"
-				},
-			'StreetInfo':{
-				'City':self.city,
-				'PostalCode':self.zip,
-				'Street':self.street,
-			#	'Number':"43",
-				'CountryCode':self.country_id.code,
-				},	
-		}
-		response=client.service.Get_PositionFromStreetInfo(**request_data)
-		self.geo_name=response['Position']['Name']
-		self.geo_latitude=response['Position']['Latitude']
-		self.geo_longitude=response['Position']['Longitude']
-
-
-
-	@api.one
-	def _ritten_count(self):
-		self.ritten_count=0
-		for f in self.ride_ids:
-			self.ritten_count=self.ritten_count+1
-		return 
-
-	@api.multi	
-	def name_get(self):	
-		if 'show_address_line' in self.env.context.keys():
-#			pdb.set_trace()
-			res=[]
-			for partner in self:
-				name=partner.name  
-				if partner.street:
-					name += ", " + partner.street
-				if partner.zip:
-					name += ", " + partner.zip
-				if partner.city:
-					name += ", " + partner.city
-				if partner.country_id:
-					name +=  " (" + partner.country_id.code +")"
-
-				res.append((partner.id,name))
-			#pdb.set_trace()	
-		else:
-			res=super(res_partner, self).name_get()
-		return res
-
-	@api.model
-	def name_search(self, name, args=None, operator='ilike', limit=100 ):
-		if 'show_address_line' in self.env.context.keys():
-			args = args or []
-			recs = self.browse()
-			name_arr=name.split(" ")
-
-			for n in name_arr:
-				#pdb.set_trace()
-				r=None
-				if len(n)>0:
-					r=self.search([('zip', 'ilike', n)])
-					r=r + self.search([('street', 'ilike', n)])
-					r=r + self.search([('name', 'ilike', n)])
-				if not recs:
-					recs=r	
-				if r:
-					recs=recs & r
-
-
-#			if name:
-#				recs = self.search(['|','|',('street', 'ilike', name),('city', 'ilike', name),('zip', 'ilike', name)] + args, limit=limit)
-			if not recs:
-				recs = self.search([('name', operator, name)] + args, limit=limit)
-			return recs.name_get()
-		else:
-			return super(res_partner, self).name_search(name=name, args=args,operator=operator, limit=limit)
 
 class hertsens_invoice_create(models.TransientModel):
 	_name='hertsens.invoice.create'

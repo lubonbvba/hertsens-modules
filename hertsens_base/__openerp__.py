@@ -20,7 +20,7 @@
     'version': '0.21',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account', 'entity_sms'],
+    'depends': ['base','account', 'entity_sms', 'base_iso3166', 'transics'],
 
     # always loaded
     'data': [

@@ -193,7 +193,7 @@
                 <field name="datum" attrs="{'invisible':[('is_recurring','=',True)], 'required':[('is_recurring','=',False)]}"/>
                 <field name="vertrek"/>
                 <field name="bestemming"/>
-                <field name="origin_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}'/>
+                <field name="origin_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','other')]"/>
                 <field name="destination_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}'/>
                 <field name="refklant" />
                 <field name="ritprijs" />
@@ -210,9 +210,33 @@
          </group>
          <group name="remarks">
             <field name="remarks"/>
+            <field name="google_navigation_url" widget="url"/>
          </group>
      </group>
      <notebook>
+<!--         <page string="Destinations">
+            <field name="destination_ids">
+
+                <field name="sequence" widget="sequence"/>
+                <field name="id" />
+                <field name="rit_id" />
+                <field name="destination" />
+                <field name="place_id" />
+            </field>
+        </page> -->
+        <page string="Destinations">
+          <field name="destination_ids">
+             <tree string="Destinations" editable="bottom">
+               <field name="sequence" widget="handle"/>
+               <field name="id" invisible="1" />
+               <field name="rit_id"  invisible="1"/>
+                <field name="place_id" context="{'show_email':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' /> 
+                <!--field name="destination" /-->
+               <field name="ref" />              
+               <field name="remarks" />              
+           </tree>
+       </field>
+   </page>
         <page string="Recurrency settings" attrs="{'invisible':[('is_recurring','=',False)]}">
              <group>
                  <group >
@@ -235,14 +259,7 @@
             <field name="child_ids"/>
         </page>
 
-<!--         <page string="Destinations">
-          <field name="destination_ids">
-             <tree string="Destinations" editable="bottom">
-               <field name="sequence" widget="handle"/>
-               <field name="destination" />
-           </tree>
-       </field>
-   </page> -->
+
 </notebook>
                                     </sheet>
                         <div class="oe_chatter">
@@ -436,7 +453,7 @@
                             <field name="is_company" on_change="onchange_type(is_company)" class="oe_inline"/> <label for="is_company" string="Is a Company?"/>) -->
                         </div>
                         <h1>
-                            <field name="name" default_focus="1" placeholder="Name" />
+                            <field name="name" default_focus="1" placeholder="Name"  attrs="{'readonly': [('geo_ok', '=', True)]}"/>
                         </h1>
                         <!--field name="parent_id"
                             placeholder="Company"
@@ -448,15 +465,17 @@
                         <!--field name="email" widget="email" required="context.get('force_email', False)" attrs="{'required': [('user_ids','!=', [])]}"/ -->
                         <field name="type" invisible="1"/>
                             <group>
-                                <field name="street"/>
-                                <field name="zip"/>
-                                <field name="city"/>
-                                <field name="country_id" options="{'no_open':True,'no_create':True}"/>
+                                <field name="street" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
+                                <field name="zip" attrs="{'readonly': [('geo_ok', '=', True)]}" />
+                                <field name="city" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
+                                <field name="country_id"  options="{'no_open':True,'no_create':True}" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
                             </group>
                             <group>
+                                <field name="geo_ok"/>
                                 <field name="geo_longitude" readonly="1"/>
                                 <field name="geo_latitude" readonly="1"/>
                                 <field name="geo_name" readonly="1"/>
+                                <field name="geo_google_maps_url" string="Google" widget="url"/>
                                 <button type="object" name="get_geo" string="Geo"/>
                             </group>
                         
