@@ -30,6 +30,7 @@ class res_partner(models.Model):
 	geo_ok=fields.Boolean(help='Geo of place is found, not modifiable')
 	geo_google_maps_url=fields.Char(compute='_compute_geo_google_maps_url')
 #	display_name = fields.Char(string='Name', compute='_display_name_compute2')
+	type=fields.Selection([('place','Place')])
 
 
 	@api.depends('geo_latitude','geo_longitude')
@@ -52,6 +53,12 @@ class res_partner(models.Model):
 
 		#pdb.set_trace()
 
+	@api.one
+	def get_geoXY_string(self):
+		if self.geo_latitude and self.geo_longitude:
+			return str(self.geo_latitude) + ',' + str(self.geo_longitude)
+		else:
+			return ''
 
 	@api.one
 	def _ritten_count(self):
@@ -61,13 +68,20 @@ class res_partner(models.Model):
 		return 
 
 	@api.multi	
-	def name_get(self):	
-		#pdb.set_trace()
-		if 'show_address_line' in self.env.context.keys():
-#			pdb.set_trace()
+	def name_get(self,context=None):
+		show_address_line=True	
+		for partner in self:
+			if partner.type and partner.type != 'place':
+				show_address_line=False
+				break
+
+		if show_address_line or ('show_address_line' in self.env.context.keys()):
+			#pdb.set_trace()
 			res=[]
 			for partner in self:
 				name=partner.name  
+			#	if partner.type == "place":
+			#		pdb.set_trace()
 				if partner.street:
 					name += ", " + partner.street
 				if partner.zip:
@@ -119,6 +133,7 @@ class res_partner(models.Model):
 					r=self.search([('zip', 'ilike', n)])
 					r=r + self.search([('street', 'ilike', n)])
 					r=r + self.search([('name', 'ilike', n)])
+					r= r & self.search(args)
 				if not recs:
 					recs=r	
 				if r:

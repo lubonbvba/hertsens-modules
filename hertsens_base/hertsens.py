@@ -61,8 +61,8 @@ class hertsens_rit(models.Model):
 	recurring_active_days=fields.Many2many('hertsens.dow')
 	parent_id=fields.Many2one('hertsens.rit', copy=False)
 	child_ids=fields.One2many('hertsens.rit', 'parent_id')
-	origin_partner_id=fields.Many2one('res.partner', string="Origin")
-	destination_partner_id=fields.Many2one('res.partner', string="Destination")
+#	origin_partner_id=fields.Many2one('res.partner', string="Origin")
+#	destination_partner_id=fields.Many2one('res.partner', string="Destination")
 	google_navigation_url=fields.Char(string='Google Nav', compute='_compute_google_navigation_url')
 	# @api.onchange('partner_id')
 	# def _checkcompany(self):
@@ -115,6 +115,7 @@ class hertsens_rit(models.Model):
 			vals['departure_time']=self._calculate_departure_time(vals['datum'])
 #		if 'remarks' in vals.keys():
 
+
 			
 	
 
@@ -149,14 +150,58 @@ class hertsens_rit(models.Model):
 				self.state='completed'
 			else:
 				self.state='planned'
-
-	@api.depends('origin_partner_id','destination_partner_id')			
+	@api.one			
+	@api.depends('destination_ids')			
 	def _compute_google_navigation_url(self):			
-		for record in self:
-			if record.origin_partner_id.geo_latitude and record.origin_partner_id.geo_longitude and record.destination_partner_id.geo_latitude and record.destination_partner_id.geo_longitude:
-				record.google_navigation_url="https://www.google.com/maps/dir/?api=1"
-				record.google_navigation_url+="&origin="+ str(record.origin_partner_id.geo_latitude) + ','+ str(record.origin_partner_id.geo_longitude)
-				record.google_navigation_url+="&destination="+ str(record.destination_partner_id.geo_latitude) + ','+ str(record.destination_partner_id.geo_longitude)
+		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
+		nr_dest=len(destinations)
+		self.google_navigation_url="https://www.google.com/maps/dir/?api=1"
+		if nr_dest>=2:
+			#pdb.set_trace()
+			self.google_navigation_url+="&origin="+ destinations[0].place_id.get_geoXY_string()[0]
+			self.google_navigation_url+="&destination="+ destinations[nr_dest-1].place_id.get_geoXY_string()[0]
+			if nr_dest>2:
+				self.google_navigation_url+="&waypoints="
+				nvia=0
+				for via in range(1,nr_dest-1):
+					self.google_navigation_url+= destinations[via].place_id.get_geoXY_string()[0] + "|"
+	@api.one				
+	def create_transics_planning(self):				
+		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
+		places=[]
+		nseq=10
+		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':'DEMO_LUBON' }}
+		for place in destinations:
+			placesinsert={
+				'OrderSeq':nseq,
+				'PlaceId':str(self.id) + '_' + str(place.id),
+				'DriverDisplay': ('ID:' + ' ' + str(place.rit_id.id ) + ',('+ place.place_id.country_id.code + ') ' + place.place_id.geo_name)[:50],
+				'Comment':  place.place_id.name + ", " + place.place_id.geo_name,  
+#				'ExecutionDate': '2017-12-04T18:00:00',
+				'Activity':{},
+#				'AlarmTimeETA':'True',
+#				'CustomNr':'True',
+				'Position':{'Longitude':place.place_id.geo_longitude,'Latitude':place.place_id.geo_longitude},
+#				'SalesPrice':'True'
+			}
+			#Set activity field
+			if place.activity_id == 'load':
+				placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_load_id', '')
+			if place.activity_id == 'unload':
+				placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
+			#Complet Comment field	
+			if place.ref:	
+				placesinsert['Comment']	+ '\nRef: ' + place.ref
+			if place.ref:	
+				placesinsert['Comment']	+ '\n' +	place.remarks 
+			nseq+=10
+			places.append(placesinsert)
+		planninginsert['Places']={'PlaceInsert':places}
+		#pdb.set_trace()
+		response=self.env['transics.transics'].Insert_Planning(planninginsert)
+
+
+
 
 	@api.multi
 	def _prepare_cost_invoice(self, partner_id):
@@ -301,6 +346,9 @@ class herstens_destination (models.Model):
 	rit_id=fields.Many2one('hertsens.rit')
 	sequence=fields.Integer()
 	place_id=fields.Many2one('res.partner', string="Location")
+	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
+
+
 
 class User(models.Model):
     _inherit = 'res.users'

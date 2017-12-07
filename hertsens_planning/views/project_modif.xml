@@ -36,8 +36,6 @@
 						<field name="datum"/>
 						<field name="vertrek"/>
 						<field name="bestemming"/>
-						                <field name="origin_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}'/>
-                <field name="destination_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}'/>
 						<field name="vehicle_type_id"/>
 						<field name="state"/>
 						<field name="partner_id" string="Customer"/>

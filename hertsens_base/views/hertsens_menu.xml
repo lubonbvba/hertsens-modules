@@ -193,11 +193,8 @@
                 <field name="datum" attrs="{'invisible':[('is_recurring','=',True)], 'required':[('is_recurring','=',False)]}"/>
                 <field name="vertrek"/>
                 <field name="bestemming"/>
-                <field name="origin_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','other')]"/>
-                <field name="destination_partner_id" context="{'show_address_line':1, 'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}'/>
                 <field name="refklant" />
                 <field name="ritprijs" />
-
             </group>
             <group attrs="{'invisible':[('is_recurring','=',True)]}">
              <field name="wachttijd" />
@@ -214,24 +211,16 @@
          </group>
      </group>
      <notebook>
-<!--         <page string="Destinations">
-            <field name="destination_ids">
-
-                <field name="sequence" widget="sequence"/>
-                <field name="id" />
-                <field name="rit_id" />
-                <field name="destination" />
-                <field name="place_id" />
-            </field>
-        </page> -->
         <page string="Destinations">
+          <button name="create_transics_planning" type="object" string="Transics"/>  
           <field name="destination_ids">
              <tree string="Destinations" editable="bottom">
                <field name="sequence" widget="handle"/>
                <field name="id" invisible="1" />
                <field name="rit_id"  invisible="1"/>
-                <field name="place_id" context="{'show_email':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'other', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' /> 
+                <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 
                 <!--field name="destination" /-->
+               <field name="activity_id" />              
                <field name="ref" />              
                <field name="remarks" />              
            </tree>
@@ -463,7 +452,7 @@
                     <group>
                         <field name="user_ids" invisible="1"/>
                         <!--field name="email" widget="email" required="context.get('force_email', False)" attrs="{'required': [('user_ids','!=', [])]}"/ -->
-                        <field name="type" invisible="1"/>
+                        <field name="type" invisible="0"/>
                             <group>
                                 <field name="street" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
                                 <field name="zip" attrs="{'readonly': [('geo_ok', '=', True)]}" />
