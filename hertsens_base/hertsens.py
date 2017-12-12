@@ -61,6 +61,7 @@ class hertsens_rit(models.Model):
 	recurring_active_days=fields.Many2many('hertsens.dow')
 	parent_id=fields.Many2one('hertsens.rit', copy=False)
 	child_ids=fields.One2many('hertsens.rit', 'parent_id')
+	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
 #	origin_partner_id=fields.Many2one('res.partner', string="Origin")
 #	destination_partner_id=fields.Many2one('res.partner', string="Destination")
 	google_navigation_url=fields.Char(string='Google Nav', compute='_compute_google_navigation_url')
@@ -199,6 +200,15 @@ class hertsens_rit(models.Model):
 		planninginsert['Places']={'PlaceInsert':places}
 		#pdb.set_trace()
 		response=self.env['transics.transics'].Insert_Planning(planninginsert)
+
+	@api.one				
+	def cancel_transics_planning(self):				
+		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
+		for place in destinations:
+			place.cancel_transics_planning()
+			self.state='cancelled'
+
+
 
 
 
@@ -347,7 +357,18 @@ class herstens_destination (models.Model):
 	sequence=fields.Integer()
 	place_id=fields.Many2one('res.partner', string="Location")
 	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
+	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
+	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned')
 
+	def cancel_transics_planning(self):
+		planningitemselection={'PlanningSelectionType':'PLACE',
+								'ID':str(self.rit_id.id) + '_' + str(self.id)
+								}
+		response=self.env['transics.transics'].Cancel_Planning(planningitemselection)
+		if response['Errors']:
+			raise exceptions.Warning(response)
+		else:
+			self.state='cancelled'
 
 
 class User(models.Model):

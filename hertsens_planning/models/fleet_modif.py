@@ -42,6 +42,8 @@ class fleet_vehicle(models.Model):
 	vehicle_pallets=fields.Integer(string="Pallet places", help="Number of pallet places")
 	vehicle_license=fields.Char(string="License n°", help="License (Transport) number")
 	project_id=fields.Many2one('project.project')
+	vehicle_Transics_TransicsID=fields.Char(string='Transics ID', help='TransicsID of the vehicle (number)')
+	vehicle_Transics_ID=fields.Char(string='TransicsID', help='ID of the vehicle (string)')
 
 
 	@api.model

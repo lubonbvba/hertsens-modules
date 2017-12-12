@@ -14,6 +14,8 @@
 					<field name="vehicle_load"/>
 					<field name="vehicle_pallets"/>
 					<field name="vehicle_license"/>
+					<field name="vehicle_Transics_ID"/>
+					<field name="vehicle_Transics_TransicsID"/>
 				</field>
 
 			</field>

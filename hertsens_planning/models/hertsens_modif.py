@@ -17,7 +17,7 @@ class hertsens_rit(models.Model):
 	task_ids=fields.One2many('project.task','ride_id')
 #	driver_id=fields.Many2one('res.users')
 	driver_id=fields.Many2one('hr.employee')
-	vehicle_id=fields.Many2one("fleet.vehicle")
+#	vehicle_id=fields.Many2one("fleet.vehicle")
 	last_msg=fields.Char()
 	last_msg_display=fields.Char(compute='_compute_last_msg_display', string="Last msg", help="Naar wie is de laatste sms gestuurd.")
 

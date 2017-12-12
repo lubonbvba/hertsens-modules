@@ -212,7 +212,15 @@
      </group>
      <notebook>
         <page string="Destinations">
-          <button name="create_transics_planning" type="object" string="Transics"/>  
+        <group>
+        <group> 
+          <field name="vehicle_id" domain="[('vehicle_Transics_TransicsID','!=', False)]" attrs="{'readonly':[('state','not in',['planned']),('is_recurring','is',True) ]}"/>
+          </group>
+          <group>  
+          <button name="create_transics_planning" type="object" string="Send Transics" attrs="{'invisible':[('state','not in',['planned']),('vehicle_id','is', False)]}"/>
+         <button name="cancel_transics_planning" type="object" string="Cancel Transics" attrs="{'invisible':[('state','in',['cancelled'])]}"/>
+          </group>
+        </group>
           <field name="destination_ids">
              <tree string="Destinations" editable="bottom">
                <field name="sequence" widget="handle"/>
@@ -221,6 +229,7 @@
                 <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 
                 <!--field name="destination" /-->
                <field name="activity_id" />              
+               <field name="state" readonly="True" />              
                <field name="ref" />              
                <field name="remarks" />              
            </tree>
