@@ -9,6 +9,7 @@ import time
 import logging
 import pytz,base64
 from zeep import Client
+from openerp.exceptions import except_orm, Warning, RedirectWarning
 
 _logger = logging.getLogger(__name__)
 
@@ -46,11 +47,15 @@ class res_partner(models.Model):
 		self.geo_name=response['Position']['Name']
 		self.geo_latitude=response['Position']['Latitude']
 		self.geo_longitude=response['Position']['Longitude']
-		if len(self.geo_name)>0:
+
+		if self.geo_name and len(self.geo_name)>0:
 			self.geo_ok=True
 		else:
 			self.geo_ok=False
-
+			self.geo_name=None
+			self.geo_latitude=0
+			self.geo_longitude=0		
+			raise Warning (_('No location found'))
 		#pdb.set_trace()
 
 	@api.one

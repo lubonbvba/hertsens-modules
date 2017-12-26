@@ -461,7 +461,7 @@
                     <group>
                         <field name="user_ids" invisible="1"/>
                         <!--field name="email" widget="email" required="context.get('force_email', False)" attrs="{'required': [('user_ids','!=', [])]}"/ -->
-                        <field name="type" invisible="0"/>
+                        <field name="type" invisible="1"/>
                             <group>
                                 <field name="street" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
                                 <field name="zip" attrs="{'readonly': [('geo_ok', '=', True)]}" />

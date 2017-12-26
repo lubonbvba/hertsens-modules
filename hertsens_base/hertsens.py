@@ -250,6 +250,12 @@ class hertsens_rit(models.Model):
 					'driver_id':None,
 					})
 				new.datum=ride.recurring_next_date
+				#pdb.set_trace()
+				for destination in ride.destination_ids:
+					newdest=destination.copy({
+						'rit_id':new.id,
+						'vehicle_id':None,
+						})
 				if ride.recurring_interval != 1:
 					ride.recurring_next_date=time.strftime("%Y-%m-%d", (datetime.strptime(ride.recurring_next_date,"%Y-%m-%d") + timedelta(days=ride.recurring_interval)).timetuple())
 				else:
