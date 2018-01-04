@@ -19,6 +19,22 @@
                             <field name="ref_required" />
                         </group>
                     </page>
+                    <page string="Geo">
+                            <!-- group>
+                                <field name="street" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
+                                <field name="zip" attrs="{'readonly': [('geo_ok', '=', True)]}" />
+                                <field name="city" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
+                                <field name="country_id"  options="{'no_open':True,'no_create':True}" attrs="{'readonly': [('geo_ok', '=', True)]}"/>
+                            </group-->
+                            <group>
+                                <field name="geo_ok"/>
+                                <field name="geo_longitude" readonly="0"/>
+                                <field name="geo_latitude" readonly="0"/>
+                                <field name="geo_name" readonly="1"/>
+                                <field name="geo_google_maps_url" string="Google" widget="url"/>
+                                <button type="object" name="get_geo" string="Geo"/>
+                            </group>
+                  </page>                    
                 </notebook>
             </field>
         </record>
@@ -33,5 +49,16 @@
                 </field>
             </field>
         </record>
+            <record model="ir.ui.view" id="hertsens_base_search_view">
+            <field name="name">hertsens_planning.ritten_search_view</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <filter name="supplier" position="after">  
+                    <filter string="Places" name="places" domain="[('type','=','place')]" help="Geo places"/>            
+                </filter>
+
+            </field>
+        </record>        
     </data>
 </openerp>

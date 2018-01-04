@@ -19,8 +19,8 @@
 			<field name="inherit_id" ref="hertsens_base.ritten_search_view"/>
 			<field name="arch" type="xml">
 				         <field name="id" position="after">  
-				         <field name="last_msg" string="Last message" filter_domain="[('last_msg','ilike',self)]"/>  
-
+				         <field name="last_msg" string="Last message" filter_domain="[('last_msg','ilike',self)]"/> 
+				         <field name="driver_id" string="Driver"  filter_domain="[('driver_id','=',self)]"/>      
 				</field>
 
 			</field>

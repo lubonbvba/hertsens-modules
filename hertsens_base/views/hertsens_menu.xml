@@ -187,8 +187,8 @@
             <group>
                 <field name="id" />"
                 <field name="is_recurring" />"
-                <field name="company_id" string="Company" options="{'no_quick_create':True,'no_create_edit':True}" invisible="True" />
-                <field name="partner_id" string="Customer" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
+                <field name="company_id" string="Company"  options="{'no_quick_create':True,'no_create_edit':True}" invisible="True" />
+                <field name="partner_id" string="Customer" domain="[('customer','=',True)]" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
 
                 <field name="datum" attrs="{'invisible':[('is_recurring','=',True)], 'required':[('is_recurring','=',False)]}"/>
                 <field name="vertrek"/>
@@ -226,7 +226,7 @@
                <field name="sequence" widget="handle"/>
                <field name="id" invisible="1" />
                <field name="rit_id"  invisible="1"/>
-                <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False, 'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 
+                <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False,  'default_customer': False,'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 
                 <!--field name="destination" /-->
                <field name="activity_id" />              
                <field name="state" readonly="True" />              
@@ -275,7 +275,8 @@
     <field name="arch" type="xml">
         <search string="Search Ritten">
          <field name="cmr" string="CMR, Ref, vertrek, bestemming" filter_domain="['|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self)]"/>
-         <field name="id" string="ID" filter_domain="[('id','=',self)]"/>               
+         <field name="id" string="ID" filter_domain="[('id','=',self)]"/>
+         <field name="driver_id" filter_domain="[('driver_id','=',self)]"/>
          <filter name="active" string="Active" domain="[('state','in',['quoted','planned','completed','waiting'])]" help="Active "/>
          <filter name="planned" string="Planned" domain="[('state','=','planned')]" help="Planned "/>
          <filter name="waiting" string="Waiting" domain="[('state','=','waiting')]" help="Waiting "/>
@@ -470,8 +471,8 @@
                             </group>
                             <group>
                                 <field name="geo_ok"/>
-                                <field name="geo_longitude" readonly="1"/>
-                                <field name="geo_latitude" readonly="1"/>
+                                <field name="geo_longitude" readonly="0"/>
+                                <field name="geo_latitude" readonly="0"/>
                                 <field name="geo_name" readonly="1"/>
                                 <field name="geo_google_maps_url" string="Google" widget="url"/>
                                 <button type="object" name="get_geo" string="Geo"/>

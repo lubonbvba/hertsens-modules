@@ -49,7 +49,7 @@ class res_partner(models.Model):
 		self.geo_longitude=response['Position']['Longitude']
 
 		if self.geo_name and len(self.geo_name)>0:
-			self.geo_ok=True
+			self.geo_ok=False #True
 		else:
 			self.geo_ok=False
 			self.geo_name=None
