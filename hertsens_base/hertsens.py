@@ -172,7 +172,8 @@ class hertsens_rit(models.Model):
 		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
 		places=[]
 		nseq=10
-		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':'DEMO_LUBON' }}
+#		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':'DEMO_LUBON' }}
+		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':self.vehicle_id.vehicle_Transics_ID }}
 		for place in destinations:
 			placesinsert={
 				'OrderSeq':nseq,
@@ -194,7 +195,7 @@ class hertsens_rit(models.Model):
 			#Complet Comment field	
 			if place.ref:	
 				placesinsert['Comment']	+ '\nRef: ' + place.ref
-			if place.ref:	
+			if place.remarks:	
 				placesinsert['Comment']	+ '\n' +	place.remarks 
 			nseq+=10
 			places.append(placesinsert)
