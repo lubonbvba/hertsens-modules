@@ -276,7 +276,7 @@
         <search string="Search Ritten">
          <field name="cmr" string="CMR, Ref, vertrek, bestemming" filter_domain="['|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self)]"/>
          <field name="id" string="ID" filter_domain="[('id','=',self)]"/>
-         <field name="driver_id" filter_domain="[('driver_id','=',self)]"/>
+         <field name="driver_id" string="Chauffeur" filter_domain="[('driver_id','ilike',self)]"/>
          <filter name="active" string="Active" domain="[('state','in',['quoted','planned','completed','waiting'])]" help="Active "/>
          <filter name="planned" string="Planned" domain="[('state','=','planned')]" help="Planned "/>
          <filter name="waiting" string="Waiting" domain="[('state','=','waiting')]" help="Waiting "/>
@@ -286,6 +286,7 @@
          <filter name="invoiced" string="Invoiced" domain="[('state','=','invoiced')]" help="Invoiced"/>
          <filter name="Recurring" string="Recurring" domain="[('is_recurring','=',True)]"/>
          <filter name="cancelled" string="Cancelled" domain="[('state','=','cancelled')]" help="Invoiced"/>
+         <!-- field name="driver_id" operator="child_of"/ -->
          <field name="partner_id" operator="child_of"/>
          <field name="company_id" operator="child_of"/>
          <separator/>

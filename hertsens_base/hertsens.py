@@ -194,9 +194,9 @@ class hertsens_rit(models.Model):
 				placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
 			#Complet Comment field	
 			if place.ref:	
-				placesinsert['Comment']	+ '\nRef: ' + place.ref
+				placesinsert['Comment']	+= '\nRef: ' + place.ref
 			if place.remarks:	
-				placesinsert['Comment']	+ '\n' +	place.remarks 
+				placesinsert['Comment']	+= '\n' +	place.remarks 
 			nseq+=10
 			places.append(placesinsert)
 		planninginsert['Places']={'PlaceInsert':places}
