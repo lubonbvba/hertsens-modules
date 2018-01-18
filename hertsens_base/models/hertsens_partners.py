@@ -23,7 +23,7 @@ class res_partner(models.Model):
 	ref_required=fields.Boolean(string="Ref required",help="Customer reference mandatory?")
 	diesel=fields.Float(help="Dieseltoeslag")
 	ritten_count=fields.Float(compute="_ritten_count")
-	partner_id=fields.Many2one('res.partner', required=True)
+	#partner_id=fields.Many2one('res.partner', required=True)
 	ride_ids=fields.One2many('hertsens.rit','partner_id')
 	geo_longitude=fields.Float(String="Longitude (X)", digits=(16, 5))
 	geo_latitude=fields.Float(String="Latitude (Y)",digits=(16, 5))

@@ -62,6 +62,7 @@ class hertsens_rit(models.Model):
 	parent_id=fields.Many2one('hertsens.rit', copy=False)
 	child_ids=fields.One2many('hertsens.rit', 'parent_id')
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
+	hist_ids=fields.One2many('hertsens.destination.hist','ride_id')
 	driver_id=fields.Many2one('hr.employee')
 #	origin_partner_id=fields.Many2one('res.partner', string="Origin")
 #	destination_partner_id=fields.Many2one('res.partner', string="Destination")
@@ -167,52 +168,26 @@ class hertsens_rit(models.Model):
 				nvia=0
 				for via in range(1,nr_dest-1):
 					self.google_navigation_url+= destinations[via].place_id.get_geoXY_string()[0] + "|"
-	@api.one				
-	def create_transics_planning(self):				
-		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
-		places=[]
-		nseq=10
-#		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':'DEMO_LUBON' }}
-		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':self.vehicle_id.vehicle_Transics_ID }}
-		for place in destinations:
-			placesinsert={
-				'OrderSeq':nseq,
-				'PlaceId':str(self.id) + '_' + str(place.id),
-				'DriverDisplay': ('ID:' + ' ' + str(place.rit_id.id ) + ',('+ place.place_id.country_id.code + ') ' + place.place_id.geo_name)[:50],
-				'Comment':  place.place_id.name + ", " + place.place_id.geo_name,  
-#				'ExecutionDate': '2017-12-04T18:00:00',
-				'Activity':{},
-#				'AlarmTimeETA':'True',
-#				'CustomNr':'True',
-				'Position':{'Longitude':place.place_id.geo_longitude,'Latitude':place.place_id.geo_longitude},
-#				'SalesPrice':'True'
-			}
-			#Set activity field
-			if place.activity_id == 'load':
-				placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_load_id', '')
-			if place.activity_id == 'unload':
-				placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
-			#Complet Comment field	
-			if place.ref:	
-				placesinsert['Comment']	+= '\nRef: ' + place.ref
-			if place.remarks:	
-				placesinsert['Comment']	+= '\n' +	place.remarks 
-			nseq+=10
-			places.append(placesinsert)
-		planninginsert['Places']={'PlaceInsert':places}
-		#pdb.set_trace()
-		response=self.env['transics.transics'].Insert_Planning(planninginsert)
 
-	@api.one				
-	def cancel_transics_planning(self):				
-		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
-		for place in destinations:
-			place.cancel_transics_planning()
-			self.state='cancelled'
-
-
-
-
+	@api.multi
+	def checkstatus(self):
+		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
+			self.state='planned'
+			return
+		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
+			self.state='dispatched'
+			return
+		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
+			#self.state='completed'
+			self.cmr=""
+			for hist in self.hist_ids:
+				if self.cmr and hist.cmr:
+					self.cmr += ","
+				if hist.cmr:
+					self.cmr+=hist.cmr
+			self.finished=True
+			self._checkstate()
+			return
 
 
 	@api.multi
@@ -253,7 +228,7 @@ class hertsens_rit(models.Model):
 					})
 				new.datum=ride.recurring_next_date
 				#pdb.set_trace()
-				for destination in ride.destination_ids:
+				for destination in ride.destination_ids.sorted(key=lambda l: l.sequence):
 					newdest=destination.copy({
 						'rit_id':new.id,
 						'vehicle_id':None,
@@ -348,7 +323,35 @@ class hertsens_rit(models.Model):
 		
 
 		new_invoice_line.invoice_line_tax_id=self.env['account.fiscal.position'].browse(curr_invoice.fiscal_position.id).map_tax(taxes)
-		
+	
+	@api.multi
+	def refresh_transics(self):
+		self.env['transics.transics'].dispatcher_query()
+
+
+	@api.multi	
+	def dispatch_transics_wizard(self):
+#		pdb.set_trace()
+		wiz=self.env['planning.transics.wizard'].create({
+#			'ride_ids': [(6, None, [self.id])],
+#			'name': self.name_get(),
+#			'vehicle_type_id': self.vehicle_type_id.id,
+			})
+		#for ride in self:
+		res=wiz._get_destinations(self)
+		action = {
+                'name': 'Dispatch Transics Wizard',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'planning.transics.wizard',
+                'domain': [],
+                'context': self.env.context,
+                'res_id': wiz.id,
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+            }
+   		#pdb.set_trace()
+   		return action
 
 
 
@@ -366,17 +369,123 @@ class herstens_destination (models.Model):
 	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict')
 	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
-	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned')
+	driver_id=fields.Many2one('res.users', copy=False)
 
+	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('received', 'Received'),('read', 'Read'),('cancelled', 'Cancelled'),('progress','In progress'),('completed','Completed')], required=True, default='planned')
+	hist_ids=fields.One2many('hertsens.destination.hist','hertsens_destination_id')
+	
+	@api.multi
 	def cancel_transics_planning(self):
+		for place in self.hist_ids:
+			if place.status == "NOT_EXECUTED":
+				place.cancel_transics_planning()
+				self.status='cancelled'
+
+	@api.multi		
+	def zzzsend_transics_planning(self, vehicle_id):
+		for place in self:
+			self.env['hertsens.destination.hist'].create_transics_planning(place.id)
+
+
+	@api.multi
+	def checkstatus(self):
+		hist=self.hist_ids[-1]
+		if hist.status=='CANCELED':
+			self.state='cancelled'
+		if hist.transferstatus == 'READ_PLANNING':
+			self.state='read'
+		if hist.status=='NOT_EXECUTED' and hist.transferstatus=='DELIVERED':
+			self.state='received'
+		if hist.status=='BUSY':
+			self.state='progress'
+		if hist.status=='FINISHED':
+			self.state='completed'
+		self.driver_id=hist.driver_id
+		self.rit_id.checkstatus()
+		
+
+		
+
+
+class herstens_destination_hist (models.Model):
+	_name="hertsens.destination.hist"
+	
+	hertsens_destination_id=fields.Many2one('hertsens.destination')
+	ride_id=fields.Many2one('hertsens.rit')
+	state=fields.Selection([('sent','Sent'),('cancelled','Cancelled')])
+	place_id=fields.Char()
+	vehicle_id=fields.Many2one('fleet.vehicle')
+	ref=fields.Char()
+	remarks=fields.Char()
+	cancelstatus=fields.Char()
+	status=fields.Char()
+	transferstatus=fields.Char()
+	lastupdate=fields.Datetime()
+	driver_id=fields.Many2one('res.users')
+	raw=fields.Char()
+	cmr=fields.Char()
+	pallet_load=fields.Integer()
+	pallet_unload=fields.Integer()
+
+	@api.multi
+	def create_transics_planning(self, destination_id, vehicle_id,ref,remarks,wiz_id):
+		hist=self.env['hertsens.destination.hist'].create({
+			'hertsens_destination_id':destination_id.id,
+			'vehicle_id':vehicle_id.id,
+			'ref':ref,
+			'remarks':remarks,
+			'ride_id': destination_id.rit_id.id,
+			})
+		hist.place_id=self.env.cr.dbname + '_' + str(wiz_id) + '_' + str(hist.id)
+		places=[]
+		nseq=10
+		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':vehicle_id.vehicle_Transics_ID }}
+		placesinsert={
+			'OrderSeq':nseq,
+			'PlaceId':hist.place_id,
+			'DriverDisplay': ('ID:' + ' ' + str(hist.ride_id.id ) + ',('+ hist.hertsens_destination_id.place_id.country_id.code + ') ' + hist.hertsens_destination_id.place_id.geo_name)[:50],
+			'Comment':  hist.hertsens_destination_id.place_id.name + ", " + hist.hertsens_destination_id.place_id.geo_name,  
+#				'ExecutionDate': '2017-12-04T18:00:00',
+			'Activity':{},
+#				'AlarmTimeETA':'True',
+#				'CustomNr':'True',
+			'Position':{'Longitude':hist.hertsens_destination_id.place_id.geo_longitude,'Latitude':hist.hertsens_destination_id.place_id.geo_latitude},
+#				'SalesPrice':'True'
+		}
+		#Set activity field
+		if hist.hertsens_destination_id.activity_id == 'load':
+			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_load_id', '')
+		if hist.hertsens_destination_id.activity_id == 'unload':
+			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
+		#Complet Comment field	
+		if ref:	
+			placesinsert['Comment']	+= '\nRef: ' + ref
+		if remarks:	
+			placesinsert['Comment']	+= '\n' +	remarks 
+		nseq+=10
+		places.append(placesinsert)
+		planninginsert['Places']={'PlaceInsert':places}
+		response=self.env['transics.transics'].Insert_Planning(planninginsert)
+		if response['Errors']:
+			raise exceptions.Warning(response)
+		else:
+			hist.state='sent'
+			hist.hertsens_destination_id.state='dispatched'
+			hist.hertsens_destination_id.vehicle_id=vehicle_id
+	
+	@api.multi				
+	def cancel_transics_planning(self):	
 		planningitemselection={'PlanningSelectionType':'PLACE',
-								'ID':str(self.rit_id.id) + '_' + str(self.id)
+								'ID':self.place_id
 								}
 		response=self.env['transics.transics'].Cancel_Planning(planningitemselection)
 		if response['Errors']:
 			raise exceptions.Warning(response)
 		else:
 			self.state='cancelled'
+			if self.hertsens_destination_id:
+				self.hertsens_destination_id.state='cancelled'
+		self.env['transics.transics'].dispatcher_query()
 
 
 class User(models.Model):

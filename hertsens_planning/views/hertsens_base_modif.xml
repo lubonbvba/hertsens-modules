@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-	<data>
+	<!-- data>
 		<record model="ir.ui.view" id="hertsens_planning.ritten_tree_view">
 			<field name="name">hertsens_planning.ritten_tree_view</field>
 			<field name="model">hertsens.rit</field>
@@ -11,8 +11,8 @@
 				</field>
 			</field>
 		</record>
-	</data>
-	<data>
+	</data -->
+	<!--data>
 			<record model="ir.ui.view" id="hertsens_planning.ritten_search_view">
 			<field name="name">hertsens_planning.ritten_search_view</field>
 			<field name="model">hertsens.rit</field>
@@ -20,13 +20,13 @@
 			<field name="arch" type="xml">
 				         <field name="id" position="after">  
 				         <field name="last_msg" string="Last message" filter_domain="[('last_msg','ilike',self)]"/> 
-				         <!-- field name="driver_id" string="Driver"  filter_domain="[('driver_id','=',self)]"/-->      
+			      
 				</field>
 
 			</field>
 		</record>
-	</data>
-		<data>
+	</data -->
+		<!-- data>
 		<record model="ir.ui.view" id="hertsens_planning.ritten_form_view">
 			<field name="name">hertsens_planning.ritten_form_view</field>
 			<field name="model">hertsens.rit</field>
@@ -38,7 +38,7 @@
 				<group name="remarks" position="after">
 					<group>
 						<field name="driver_id"/>
-						<!--field name="vehicle_id"/ -->
+						
 						<field name="last_msg" invisible='1'/>
 						<field name="last_msg_display" readonly='1'/>
 						<button name="dispatch_ride" type="object" string="SMS" help="Toewijzen met SMS"/>
@@ -50,5 +50,5 @@
 
 			</field>
 		</record>
-	</data>
+	</data -->
 </openerp>

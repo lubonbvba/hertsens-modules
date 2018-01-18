@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+        <record id="view_hertsens_destination_hist_form" model="ir.ui.view">
+            <field name="name">hertsens.destination.hist.form</field>
+            <field name="model">hertsens.destination.hist</field>
+            <field name="arch" type="xml">
+                <form string="History detail">
+                    <group>
+                        <group>
+                            <field name="place_id"/>
+                            <field name="ride_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="driver_id"/>
+                            <field name="cmr"/>
+                            <field name="pallet_load"/>
+                            <field name="pallet_unload"/>
+                            <field name="ref"/>
+                            <field name="remarks"/>
+                        </group>
+                        <group>
+                            <field name="lastupdate"/>
+                            <field name="status"/>
+                            <field name="cancelstatus"/>
+                            <field name="transferstatus"/>
+                            <button type="object" string="Cancel" name='cancel_transics_planning'/>
+                        </group>
+                        <field name="raw"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="view_hertsens_destination_hist_tree" model="ir.ui.view">
+            <field name="name">hertsens.destination.hist.tree</field>
+            <field name="model">hertsens.destination.hist</field>
+            <field name="arch" type="xml">
+                <tree string="History">
+                            <field name="place_id"/>
+                            <field name="ride_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="driver_id"/>
+                            <field name="cmr"/>
+                            <field name="lastupdate"/>
+                            <field name="status"/>
+                            <field name="cancelstatus"/>
+                            <field name="transferstatus"/>
+                            <!-- button type="object" string="Cancel" name='cancel_transics_planning'/ -->
+                </tree>
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="hertsens_account_invoice_operational_tree">
             <field name="name">hertsens.account_invoice_operational_tree02</field>
@@ -162,6 +209,7 @@
            <field name="bestemming" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="refklant" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
            <field name="ritprijs" attrs="{'readonly': [('state', '=', 'invoiced')]}" />
+           <field name="vehicle_type_id" required="True" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
            <field name="wachttijd" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}" />
            <field name="total_ride_price" sum="Total" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
            <field name="charges_vat" sum="Total" attrs="{'readonly': ['|',('state', '=', 'invoiced'),('is_recurring','=',True)]}"/>
@@ -189,7 +237,7 @@
                 <field name="is_recurring" />"
                 <field name="company_id" string="Company"  options="{'no_quick_create':True,'no_create_edit':True}" invisible="True" />
                 <field name="partner_id" string="Customer" domain="[('customer','=',True)]" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'readonly': [('state', '=', 'invoiced')]}"/>
-
+                <field name="vehicle_type_id" required="True"/>
                 <field name="datum" attrs="{'invisible':[('is_recurring','=',True)], 'required':[('is_recurring','=',False)]}"/>
                 <field name="vertrek"/>
                 <field name="bestemming"/>
@@ -209,20 +257,26 @@
             <field name="remarks"/>
             <field name="google_navigation_url" widget="url"/>
          </group>
+                            <group>
+                        <field name="driver_id"/>
+                        <!--field name="vehicle_id"/ -->
+                        <field name="last_msg" invisible='1'/>
+                        <field name="last_msg_display" readonly='1'/>
+                        <button name="dispatch_ride" type="object" string="SMS" help="Toewijzen met SMS"/>
+                        <button name="dispatch_ride_silent" type="object" string="Wijs toe, zonder SMS" help="Deze button geeft de mogelijkheid om een rit die bv mondeling toegewezen is mee in het tracking systeem te zetten." />
+                        <button name="clr_last_msg" type="object" string="CLR" help="Last msg clearen"/>
+
+                    </group>
      </group>
      <notebook>
         <page string="Destinations">
         <group>
-        <group> 
-          <field name="vehicle_id" domain="[('vehicle_Transics_TransicsID','!=', False)]" attrs="{'readonly':[('state','not in',['planned']),('is_recurring','is',True) ]}"/>
-          </group>
           <group>  
-          <button name="create_transics_planning" type="object" string="Send Transics" attrs="{'invisible':[('state','not in',['planned']),('vehicle_id','is', False)]}"/>
-         <button name="cancel_transics_planning" type="object" string="Cancel Transics" attrs="{'invisible':[('state','in',['cancelled'])]}"/>
+          <button name="dispatch_transics_wizard" type="object" string="Dispatch Transics" attrs="{'invisible':[('state','not in',['planned'])]}"/>
           </group>
         </group>
-          <field name="destination_ids">
-             <tree string="Destinations" editable="bottom">
+          <field name="destination_ids" options='{"always_reload": True}'>
+             <tree string="Destinations" editable="bottom" default_order="sequence">
                <field name="sequence" widget="handle"/>
                <field name="id" invisible="1" />
                <field name="rit_id"  invisible="1"/>
@@ -230,10 +284,32 @@
                 <!--field name="destination" /-->
                <field name="activity_id" />              
                <field name="state" readonly="True" />              
+               <field name="vehicle_id" readonly="True" />              
+               <field name="driver_id" readonly="True" />              
                <field name="ref" />              
-               <field name="remarks" />              
+               <field name="remarks" /> 
+               <button type="object" string="X" name='cancel_transics_planning' help="Click to cancel this destination"/>             
            </tree>
        </field>
+   </page>
+   <page string="History">
+    <field name="hist_ids" readonly="1" options='{"always_reload": True}'>
+    <tree string="Destination History">
+        <field name="place_id"/>
+        <field name="vehicle_id"/>
+        <field name="driver_id"/>
+        <field name="cmr"/>
+        <field name="ref"/>
+        <field name="remarks"/>
+        <field name="pallet_unload"/>
+        <field name="pallet_load"/>
+        <field name="state"/>
+        <field name="status"/>
+        <field name="transferstatus"/>
+        <field name="cancelstatus"/>
+        <button name="cancel_transics_planning" type='object' string="x" />
+    </tree>
+    </field>
    </page>
         <page string="Recurrency settings" attrs="{'invisible':[('is_recurring','=',False)]}">
              <group>
@@ -276,9 +352,12 @@
         <search string="Search Ritten">
          <field name="cmr" string="CMR, Ref, vertrek, bestemming" filter_domain="['|','|','|',('cmr','ilike',self),('refklant','ilike',self),('vertrek','ilike',self),('bestemming','ilike',self)]"/>
          <field name="id" string="ID" filter_domain="[('id','=',self)]"/>
+         <field name="last_msg" string="Last message" filter_domain="[('last_msg','ilike',self)]"/>
          <field name="driver_id" string="Chauffeur" filter_domain="[('driver_id','ilike',self)]"/>
          <filter name="active" string="Active" domain="[('state','in',['quoted','planned','completed','waiting'])]" help="Active "/>
+         <filter name="today" string="Planned Today" domain="['&amp;',('state','=','planned'),('datum','=', ((context_today().strftime('%Y-%m-%d'))))]" help="Planned today "/>
          <filter name="planned" string="Planned" domain="[('state','=','planned')]" help="Planned "/>
+         <filter name="dispatched" string="Dispatched" domain="[('state','=','dispatched')]" help="Dispatched, sent to vehicle "/>
          <filter name="waiting" string="Waiting" domain="[('state','=','waiting')]" help="Waiting "/>
          <filter name="toinvoice" string="To be invoiced" domain="[('state','=','toinvoice')]" help="Ready for invoicing"/>
 
@@ -402,7 +481,26 @@
             <field name="view_id" ref="ritten_tree_view"></field>
             <field name="view_mode">tree,form</field>
         </record>
-
+        <record model="ir.actions.act_window" id="rittenmenu_planning_action">
+            <field name="name">Ritten</field>
+            <field name="res_model">hertsens.rit</field>
+            <field name="domain"></field>
+            <!-- field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
+            <field name="context">{'search_default_today': 1 }</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="ritten_tree_view"></field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record model="ir.actions.act_window" id="histmenu_action">
+            <field name="name">Hist</field>
+            <field name="res_model">hertsens.destination.hist</field>
+            <field name="domain"></field>
+            <!-- field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
+            <!--field name="context">{'search_default_active': 1 }</field-->
+            <field name="view_type">form</field>
+            <!--field name="view_id" ref="ritten_tree_view"></field -->
+            <field name="view_mode">tree,form</field>
+        </record>
         <record model="ir.actions.act_window" id="jlh_customers_action">
             <field name="name">Customers JLH Logistics</field>
             <field name="res_model">res.partner</field>
@@ -491,7 +589,9 @@
 
 
         <menuitem id="ritten_menu" name="Rides" parent="base.menu_base_partner" sequence="1" />
+        <menuitem id="planning_ritten_menu" name="Planning" parent="ritten_menu" sequence="0" action="rittenmenu_planning_action" />        
         <menuitem id="all_ritten_menu" name="Rides" parent="ritten_menu" sequence="0" action="rittenmenu_action" />
+        <menuitem id="all_hist_menu" name="Hist" parent="transics.menu_config_transics" sequence="0" action="histmenu_action" />
         
         <menuitem id="hertsens_invoicing_menu" name="Invoicing" parent="base.menu_base_partner" sequence="3" />
         <menuitem id="hertsens_toinvoice_menu" name="To be invoiced" parent="hertsens_invoicing_menu" sequence="1" action="" />

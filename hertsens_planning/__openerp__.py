@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
     'category': 'Hertsens',
-    'version': '0.22',
+    'version': '0.23',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'hertsens_base', 'project', 'fleet','hr', 'entity_sms'],
@@ -25,15 +25,15 @@
     'data': [
         'security/ir.model.access.csv',
         'templates.xml',
-        'data/project_data.xml',
-        'data/vehicle_data.xml',
+#        'data/project_data.xml',
+#        'data/vehicle_data.xml',
 #        'data/migrate.xml',
-        'views/fleet_modif.xml',
-        'views/project_modif.xml',
-        'views/hertsens_base_modif.xml',
-        'views/planning.xml',
-        'views/users_modif.xml',
-        'views/hr_modif.xml',
+#        'views/fleet_modif.xml',
+#        'views/project_modif.xml',
+#        'views/hertsens_base_modif.xml',
+#        'views/planning.xml',
+#        'views/users_modif.xml',
+ #       'views/hr_modif.xml',
     ],
     'sequence': '500',
     # only loaded in demonstration mode
