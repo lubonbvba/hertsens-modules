@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="planning_transics_wizard_form">
+			<field name="name">plannig.transics.wizard.form</field>
+			<field name="model">planning.transics.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Vehicle selection">
+					<group>
+						<group>
+							<field name="id" />
+							<field name="vehicle_id" required="1"/>
+							<field name="vehicle_type_id" readonly="True"/>
+							<field name="dispatch_message" readonly="True" />
+						</group>
+						<!--group string="Selections">
+							<field name="show_type_only" />
+							<field name="show_free_only" />
+							<button name="set_candidates" string="Search" type="object"/>
+						</group-->
+					</group>
+					<notebook>
+						<page string="Destinations">
+							<field name="destination_ids" >
+								<tree default_order="sequence" editable="top" options='{"always_reload": True}' create="false">
+									<field name="sequence" widget="handle"/>
+									<field name="destination_id" invisible="1"/>
+									<field name="ride_id" readonly="1"/>
+									<field name="name" readonly="1"/>
+									<field name="activity" readonly="1"/>
+									<field name="state" readonly="1"/>
+									<field name="ref"/>
+									<field name="remarks"/>
+									<field name="dispatch"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Ritten">
+							<field name="ride_ids" >
+								<tree zcreate="false">
+									<field name="partner_id"/>
+									<field name="id"/>
+									<field name="display_name"/>
+
+								</tree>
+							</field>
+						</page>
+					</notebook>
+					<footer>
+						<button name="confirm_dispatch" type="object"
+							string="Confirm" class="oe_highlight"/>
+							or
+						<button special="cancel" string="Cancel"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+		<!-- act_window name="Dispatch Transics" res_model="planning.transics.wizard"
+            src_model="hertsens.rit" view_mode="form" target="new"
+            multi="True" key2="client_action_multi" id="action_planning_transics_wizard" / -->
+
+<record id="dditem1_action" model="ir.actions.server">
+        <field name="name">Dispatch Transics</field>
+        <field name="model_id" ref="model_hertsens_rit"/>
+        <field name="state">code</field>
+        <field name="condition">True</field>
+        <field name="code">if object: action = self.browse(cr,uid,context.get('active_ids', [])).dispatch_transics_wizard()</field>
+</record>
+<record id="dditem1" model="ir.values">
+        <field name="name">name</field>
+        <field name="model">hertsens.rit</field>
+        <field name="key" >action</field>
+        <field name="key2">client_action_multi</field>
+        <field name="value" eval="'ir.actions.server,%d'%dditem1_action"/>
+</record>
+
+<record id="dditem2_action" model="ir.actions.server">
+        <field name="name">Refresh Transics</field>
+        <field name="model_id" ref="model_hertsens_rit"/>
+        <field name="state">code</field>
+        <field name="condition">True</field>
+        <field name="code">self.browse(cr,uid,context.get('active_ids', [])).refresh_transics()</field>
+</record>
+<record id="dditem2" model="ir.values">
+        <field name="name">name2</field>
+        <field name="model">hertsens.rit</field>
+        <field name="key" >action</field>
+        <field name="key2">client_action_multi</field>
+        <field name="value" eval="'ir.actions.server,%d'%dditem2_action"/>
+</record>
+
+
+
+	</data>
+</openerp>
