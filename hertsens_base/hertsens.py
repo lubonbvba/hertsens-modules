@@ -389,19 +389,20 @@ class herstens_destination (models.Model):
 
 	@api.multi
 	def checkstatus(self):
-		hist=self.hist_ids[-1]
-		if hist.status=='CANCELED':
-			self.state='cancelled'
-		if hist.transferstatus == 'READ_PLANNING':
-			self.state='read'
-		if hist.status=='NOT_EXECUTED' and hist.transferstatus=='DELIVERED':
-			self.state='received'
-		if hist.status=='BUSY':
-			self.state='progress'
-		if hist.status=='FINISHED':
-			self.state='completed'
-		self.driver_id=hist.driver_id
-		self.rit_id.checkstatus()
+		if len(self.hist_ids)>0:
+			hist=self.hist_ids[-1]
+			if hist.status=='CANCELED':
+				self.state='cancelled'
+			if hist.transferstatus == 'READ_PLANNING':
+				self.state='read'
+			if hist.status=='NOT_EXECUTED' and hist.transferstatus=='DELIVERED':
+				self.state='received'
+			if hist.status=='BUSY':
+				self.state='progress'
+			if hist.status=='FINISHED':
+				self.state='completed'
+			self.driver_id=hist.driver_id
+			self.rit_id.checkstatus()
 		
 
 		
