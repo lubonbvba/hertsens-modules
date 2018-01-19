@@ -381,10 +381,6 @@ class herstens_destination (models.Model):
 				place.cancel_transics_planning()
 				self.status='cancelled'
 
-	@api.multi		
-	def zzzsend_transics_planning(self, vehicle_id):
-		for place in self:
-			self.env['hertsens.destination.hist'].create_transics_planning(place.id)
 
 
 	@api.multi
@@ -462,7 +458,9 @@ class herstens_destination_hist (models.Model):
 		if ref:	
 			placesinsert['Comment']	+= '\nRef: ' + ref
 		if remarks:	
-			placesinsert['Comment']	+= '\n' +	remarks 
+			placesinsert['Comment']	+= '\n' +	remarks
+		if True:
+			placesinsert['Comment']	+= '\n\nDebug info:' +	hist.place_id
 		nseq+=10
 		places.append(placesinsert)
 		planninginsert['Places']={'PlaceInsert':places}
@@ -486,7 +484,7 @@ class herstens_destination_hist (models.Model):
 			self.state='cancelled'
 			if self.hertsens_destination_id:
 				self.hertsens_destination_id.state='cancelled'
-		self.env['transics.transics'].dispatcher_query()
+		#self.env['transics.transics'].dispatcher_query()
 
 
 class User(models.Model):

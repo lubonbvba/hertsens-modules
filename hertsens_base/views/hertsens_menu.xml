@@ -355,9 +355,11 @@
          <field name="last_msg" string="Last message" filter_domain="[('last_msg','ilike',self)]"/>
          <field name="driver_id" string="Chauffeur" filter_domain="[('driver_id','ilike',self)]"/>
          <filter name="active" string="Active" domain="[('state','in',['quoted','planned','completed','waiting'])]" help="Active "/>
-         <filter name="today" string="Planned Today" domain="['&amp;',('state','=','planned'),('datum','=', ((context_today().strftime('%Y-%m-%d'))))]" help="Planned today "/>
+         <filter name="planned_today" string="Planned Today" domain="['&amp;',('state','=','planned'),('datum','=', ((context_today().strftime('%Y-%m-%d'))))]" help="Planned today "/>
+         <filter name="dispatched" string="Dispatched" domain="['&amp;',('state','=','dispatched'),('is_recurring','!=', True)]" help="Dispatched, in progress"/>
+         <filter name="finished_today" string="Finished Today" domain="['&amp;',('finished','=',True),('datum','=', ((context_today().strftime('%Y-%m-%d'))))]" help="Planned today "/>
+
          <filter name="planned" string="Planned" domain="[('state','=','planned')]" help="Planned "/>
-         <filter name="dispatched" string="Dispatched" domain="[('state','=','dispatched')]" help="Dispatched, sent to vehicle "/>
          <filter name="waiting" string="Waiting" domain="[('state','=','waiting')]" help="Waiting "/>
          <filter name="toinvoice" string="To be invoiced" domain="[('state','=','toinvoice')]" help="Ready for invoicing"/>
 
@@ -481,12 +483,32 @@
             <field name="view_id" ref="ritten_tree_view"></field>
             <field name="view_mode">tree,form</field>
         </record>
-        <record model="ir.actions.act_window" id="rittenmenu_planning_action">
+        <record model="ir.actions.act_window" id="rittenmenu_planned_today_action">
             <field name="name">Ritten</field>
             <field name="res_model">hertsens.rit</field>
             <field name="domain"></field>
             <!-- field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
-            <field name="context">{'search_default_today': 1 }</field>
+            <field name="context">{'search_default_planned_today': 1 }</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="ritten_tree_view"></field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record model="ir.actions.act_window" id="rittenmenu_dispatched_today_action">
+            <field name="name">Ritten</field>
+            <field name="res_model">hertsens.rit</field>
+            <field name="domain"></field>
+            <!-- field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
+            <field name="context">{'search_default_dispatched': 1 }</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="ritten_tree_view"></field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <record model="ir.actions.act_window" id="rittenmenu_finished_today_action">
+            <field name="name">Ritten</field>
+            <field name="res_model">hertsens.rit</field>
+            <field name="domain"></field>
+            <!-- field name="context">{'default_partner_id':ref('res.partner.partner_id'), 'default_company_id':ref('res.partner.company_id')}></field> -->
+            <field name="context">{'search_default_finished_today': 1 }</field>
             <field name="view_type">form</field>
             <field name="view_id" ref="ritten_tree_view"></field>
             <field name="view_mode">tree,form</field>
@@ -588,8 +610,13 @@
         <menuitem id="jlh_customers_menu" name="JLH Logistics" parent="base.menu_partner_form" action="jlh_customers_action" groups="hertsens_base.group_hertsens_user_jlh"/>
 
 
-        <menuitem id="ritten_menu" name="Rides" parent="base.menu_base_partner" sequence="1" />
-        <menuitem id="planning_ritten_menu" name="Planning" parent="ritten_menu" sequence="0" action="rittenmenu_planning_action" />        
+        <menuitem id="ritten_menu" name="Rides" parent="base.menu_base_partner" sequence="10" />
+        <menuitem id="planning_ritten_menu" name="Planning" parent="ritten_menu" sequence="20" />
+        <menuitem id="planning_planned_today_menu" name="Planned" parent="planning_ritten_menu" sequence="10" action="rittenmenu_planned_today_action"/>
+        <menuitem id="planning_dispatched_today_menu" name="Dispatched" parent="planning_ritten_menu" sequence="20" action="rittenmenu_dispatched_today_action"/>
+        <menuitem id="planning_dfinished_today_menu" name="Finished" parent="planning_ritten_menu" sequence="30" action="rittenmenu_finished_today_action"/>
+
+
         <menuitem id="all_ritten_menu" name="Rides" parent="ritten_menu" sequence="0" action="rittenmenu_action" />
         <menuitem id="all_hist_menu" name="Hist" parent="transics.menu_config_transics" sequence="0" action="histmenu_action" />
         

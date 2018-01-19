@@ -52,12 +52,13 @@ class planning_transics_wizard(models.TransientModel):
 		return res		
 	@api.multi	
 	def confirm_dispatch(self):
+		#pdb.set_trace()
 		for dest in self.destination_ids.sorted(key=lambda l: l.sequence):
 			if dest.dispatch:
 				self.env['hertsens.destination.hist'].create_transics_planning(dest.destination_id,self.vehicle_id,dest.ref,dest.remarks,self.id)
 				
-		if dest:
-			self.env['transics.transics'].dispatcher_query()
+		#if dest:
+		#	self.env['transics.transics'].dispatcher_query()
 
 class planning_transics_destination(models.TransientModel):
 	_name = "planning.transics.destination"
