@@ -171,6 +171,9 @@ class hertsens_rit(models.Model):
 
 	@api.multi
 	def checkstatus(self):
+		for dest in self.destination_ids:
+			if dest.employee_id:
+				self.driver_id=dest.employee_id
 		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
 			self.state='planned'
 			return
@@ -369,7 +372,7 @@ class herstens_destination (models.Model):
 	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict')
 	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
-	driver_id=fields.Many2one('res.users', copy=False)
+	employee_id=fields.Many2one('hr.employee', string="Driver", copy=False)
 
 	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('received', 'Received'),('read', 'Read'),('cancelled', 'Cancelled'),('progress','In progress'),('completed','Completed')], required=True, default='planned')
 	hist_ids=fields.One2many('hertsens.destination.hist','hertsens_destination_id')
@@ -397,7 +400,7 @@ class herstens_destination (models.Model):
 				self.state='progress'
 			if hist.status=='FINISHED':
 				self.state='completed'
-			self.driver_id=hist.driver_id
+			self.employee_id=hist.employee_id
 			self.rit_id.checkstatus()
 		
 
@@ -418,12 +421,17 @@ class herstens_destination_hist (models.Model):
 	status=fields.Char()
 	transferstatus=fields.Char()
 	lastupdate=fields.Datetime()
-	driver_id=fields.Many2one('res.users')
+	employee_id=fields.Many2one('hr.employee', string="Driver")
 	raw=fields.Char()
 	cmr=fields.Char()
 	pallet_load=fields.Integer()
 	pallet_unload=fields.Integer()
-
+	longitude=fields.Float()
+	latitude=fields.Float()
+	km=fields.Integer()
+	arrivaldate=fields.Datetime()
+	leavingdate=fields.Datetime()
+	geo_lookupname=fields.Char()
 	@api.multi
 	def create_transics_planning(self, destination_id, vehicle_id,ref,remarks,wiz_id):
 		hist=self.env['hertsens.destination.hist'].create({
@@ -440,8 +448,8 @@ class herstens_destination_hist (models.Model):
 		placesinsert={
 			'OrderSeq':nseq,
 			'PlaceId':hist.place_id,
-			'DriverDisplay': ('ID:' + ' ' + str(hist.ride_id.id ) + ',('+ hist.hertsens_destination_id.place_id.country_id.code + ') ' + hist.hertsens_destination_id.place_id.geo_name)[:50],
-			'Comment':  hist.hertsens_destination_id.place_id.name + ", " + hist.hertsens_destination_id.place_id.geo_name,  
+			'DriverDisplay': ('ID:' + ' ' + str(hist.ride_id.id ) + ',('+ hist.hertsens_destination_id.place_id.country_id.code + ') ' + (hist.hertsens_destination_id.place_id.geo_name or "Onbekend"))[:50],
+			'Comment':  hist.hertsens_destination_id.place_id.name + ", " + (hist.hertsens_destination_id.place_id.geo_name or "Onbekend"),  
 #				'ExecutionDate': '2017-12-04T18:00:00',
 			'Activity':{},
 #				'AlarmTimeETA':'True',

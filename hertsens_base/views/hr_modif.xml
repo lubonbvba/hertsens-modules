@@ -19,6 +19,9 @@
 						</field>
 					</page>
 				</page>
+				<field name="work_location" position="after">
+					<field name="transics_id"/>
+				</field>
 			</field>
 		</record>
 	</data>

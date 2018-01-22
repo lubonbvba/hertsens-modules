@@ -12,7 +12,6 @@
 							<field name="is_driver" />
 							<field name="is_available_for_planning"  />
 							<field name="project_id" />
-							<field name="transics_id" />
 							<field name="employee_ids" />
 						</group>
 					</page>
@@ -27,7 +26,6 @@
 				<field name="fax" position="after">
 					<field name="is_driver" />
 					<field name="project_id" />
-					<field name="transics_id" />
 					<field name="is_available_for_planning"  />
 				</field>
 			</field>
@@ -40,7 +38,6 @@
 				<field name="name" position="after" >
 					<field name="is_driver" />
 					<field name="is_available_for_planning"  />
-					<field name="transics_id" />
 				</field>
 			</field>
 		</record>

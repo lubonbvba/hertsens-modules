@@ -11,12 +11,18 @@
                             <field name="place_id"/>
                             <field name="ride_id"/>
                             <field name="vehicle_id"/>
-                            <field name="driver_id"/>
+                            <field name="employee_id"/>
                             <field name="cmr"/>
                             <field name="pallet_load"/>
                             <field name="pallet_unload"/>
                             <field name="ref"/>
                             <field name="remarks"/>
+                            <field name="km"/>
+                            <field name="arrivaldate"/>
+                            <field name="leavingdate"/>
+                            <field name="geo_lookupname"/>
+                            <field name="longitude"/>
+                            <field name="latitude"/>
                         </group>
                         <group>
                             <field name="lastupdate"/>
@@ -38,8 +44,9 @@
                             <field name="place_id"/>
                             <field name="ride_id"/>
                             <field name="vehicle_id"/>
-                            <field name="driver_id"/>
+                            <field name="employee_id"/>
                             <field name="cmr"/>
+                            <field name="km"/>
                             <field name="lastupdate"/>
                             <field name="status"/>
                             <field name="cancelstatus"/>
@@ -285,7 +292,7 @@
                <field name="activity_id" />              
                <field name="state" readonly="True" />              
                <field name="vehicle_id" readonly="True" />              
-               <field name="driver_id" readonly="True" />              
+               <field name="employee_id" readonly="True" />              
                <field name="ref" />              
                <field name="remarks" /> 
                <button type="object" string="X" name='cancel_transics_planning' help="Click to cancel this destination"/>             
@@ -297,12 +304,15 @@
     <tree string="Destination History">
         <field name="place_id"/>
         <field name="vehicle_id"/>
-        <field name="driver_id"/>
+        <field name="employee_id"/>
         <field name="cmr"/>
         <field name="ref"/>
         <field name="remarks"/>
         <field name="pallet_unload"/>
         <field name="pallet_load"/>
+        <field name="km"/>
+        <field name="longitude"/>
+        <field name="latitude"/>
         <field name="state"/>
         <field name="status"/>
         <field name="transferstatus"/>
