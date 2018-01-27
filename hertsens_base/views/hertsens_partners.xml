@@ -34,7 +34,16 @@
                                 <field name="geo_google_maps_url" string="Google" widget="url"/>
                                 <button type="object" name="get_geo" string="Geo"/>
                             </group>
-                  </page>                    
+                  </page> 
+                  <page string="Hist">
+                    <field name="hertsens_destination_ids">
+                        <tree>
+                            <field name="rit_id"/>
+                            <field name="employee_id"/>
+                            <field name="vehicle_id"/>
+                        </tree>
+                    </field>
+                  </page>                   
                 </notebook>
             </field>
         </record>

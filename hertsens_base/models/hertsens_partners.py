@@ -30,6 +30,8 @@ class res_partner(models.Model):
 	geo_name=fields.Char()
 	geo_ok=fields.Boolean(help='Geo of place is found, not modifiable')
 	geo_google_maps_url=fields.Char(compute='_compute_geo_google_maps_url')
+	hertsens_destination_ids=fields.One2many('hertsens.destination','place_id')
+
 #	display_name = fields.Char(string='Name', compute='_display_name_compute2')
 	type=fields.Selection(selection_add=[('place','Place')])
 

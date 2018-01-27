@@ -34,6 +34,9 @@ class fleet_vehicle_type(models.Model):
 
 class fleet_vehicle(models.Model):
 	_inherit="fleet.vehicle"
+	_sql_constraints = {
+	('vehicle_transics_id_uniq', 'unique(vehicle_transics_id)', 'Transics ID has to be unique')
+    	}	
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type", required=True)
 	vehicle_length=fields.Integer(string="Length", help="Vehicle heigth in cm")
 	vehicle_width=fields.Integer(string="Width", help="Vehicle width in cm" )
@@ -43,7 +46,7 @@ class fleet_vehicle(models.Model):
 	vehicle_license=fields.Char(string="License n°", help="License (Transport) number")
 	project_id=fields.Many2one('project.project')
 	vehicle_Transics_TransicsID=fields.Char(string='Transics ID', help='TransicsID of the vehicle (number)')
-	vehicle_Transics_ID=fields.Char(string='TransicsID', help='ID of the vehicle (string)')
+	vehicle_transics_id=fields.Char(string='TransicsID', help='ID of the vehicle (string)', oldname='vehicle_Transics_ID')
 
 
 	@api.model

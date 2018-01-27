@@ -409,7 +409,9 @@ class herstens_destination (models.Model):
 
 class herstens_destination_hist (models.Model):
 	_name="hertsens.destination.hist"
-	
+	_sql_constraints = {
+		('place_id_uniq', 'unique(place_id)', 'Place ID not unique, contact Lubon')
+	}
 	hertsens_destination_id=fields.Many2one('hertsens.destination')
 	ride_id=fields.Many2one('hertsens.rit')
 	state=fields.Selection([('sent','Sent'),('cancelled','Cancelled')])
@@ -444,7 +446,7 @@ class herstens_destination_hist (models.Model):
 		hist.place_id=self.env.cr.dbname + '_' + str(wiz_id) + '_' + str(hist.id)
 		places=[]
 		nseq=10
-		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':vehicle_id.vehicle_Transics_ID }}
+		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':vehicle_id.vehicle_transics_id }}
 		placesinsert={
 			'OrderSeq':nseq,
 			'PlaceId':hist.place_id,

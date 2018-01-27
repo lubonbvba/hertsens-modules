@@ -40,7 +40,7 @@
             <field name="name">hertsens.destination.hist.tree</field>
             <field name="model">hertsens.destination.hist</field>
             <field name="arch" type="xml">
-                <tree string="History">
+                <tree string="History" default_order="lastupdate DESC">
                             <field name="place_id"/>
                             <field name="ride_id"/>
                             <field name="vehicle_id"/>
