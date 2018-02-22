@@ -159,15 +159,21 @@ class hertsens_rit(models.Model):
 		destinations=self.destination_ids.sorted(key=lambda l: l.sequence)
 		nr_dest=len(destinations)
 		self.google_navigation_url="https://www.google.com/maps/dir/?api=1"
-		if nr_dest>=2:
-			#pdb.set_trace()
-			self.google_navigation_url+="&origin="+ destinations[0].place_id.get_geoXY_string()[0]
-			self.google_navigation_url+="&destination="+ destinations[nr_dest-1].place_id.get_geoXY_string()[0]
-			if nr_dest>2:
-				self.google_navigation_url+="&waypoints="
-				nvia=0
-				for via in range(1,nr_dest-1):
-					self.google_navigation_url+= destinations[via].place_id.get_geoXY_string()[0] + "|"
+		try:
+			if nr_dest>=2:
+				if destinations[0].place_id:
+					self.google_navigation_url+="&origin="+ destinations[0].place_id.get_geoXY_string()[0]
+				if destinations[nr_dest-1].place_id:	
+					self.google_navigation_url+="&destination="+ destinations[nr_dest-1].place_id.get_geoXY_string()[0]
+				if nr_dest>2:
+					self.google_navigation_url+="&waypoints="
+					nvia=0
+					for via in range(1,nr_dest-1):
+						if destinations[via].place_id:
+							self.google_navigation_url+= destinations[via].place_id.get_geoXY_string()[0] + "|"
+		except:
+			pdb.set_trace()
+			#raise exceptions.Warning("Probleem met lege bestemming, id: %d", self.id )			
 
 	@api.multi
 	def checkstatus(self):
@@ -369,7 +375,7 @@ class herstens_destination (models.Model):
 	remarks=fields.Char()
 	rit_id=fields.Many2one('hertsens.rit')
 	sequence=fields.Integer(required=True, default=100)
-	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict')
+	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict', required=True)
 	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
 	employee_id=fields.Many2one('hr.employee', string="Driver", copy=False)

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
-         <!-- Task Stages -->
-
+    <data noupdate="1">
         <record id="vehicle_type_caddy" model="fleet.vehicle.type">
             <field name="color_index">1</field>
             <field name="name">Caddy</field>
