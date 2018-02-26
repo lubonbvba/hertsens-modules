@@ -284,7 +284,8 @@
         </group>
           <field name="destination_ids" options='{"always_reload": True}'>
              <tree string="Destinations" editable="bottom" default_order="sequence">
-               <field name="sequence" widget="handle"/>
+               <field name="sequence" widget="handle" readonly='1'/>
+               <field name="sequence_calc"/>
                <field name="id" invisible="1" />
                <field name="rit_id"  invisible="1"/>
                 <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False,  'default_customer': False,'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 

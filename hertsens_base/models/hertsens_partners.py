@@ -134,13 +134,14 @@ class res_partner(models.Model):
 			name_arr=name.split(" ")
 
 			for n in name_arr:
-				#pdb.set_trace()
 				r=None
 				if len(n)>0:
-					r=self.search([('zip', 'ilike', n)])
-					r=r + self.search([('street', 'ilike', n)])
-					r=r + self.search([('name', 'ilike', n)])
-					r= r & self.search(args)
+					r=self.search([('zip', 'ilike', n)] + args, limit=limit)
+					r=r + self.search([('street', 'ilike' , n)] + args, limit=limit)
+					r=r + self.search([('name', 'ilike', n)] + args, limit=limit)
+					r=r + self.search([('city', 'ilike', n)] + args, limit=limit)
+					#r= r & self.search(args,limit=limit)
+				
 				if not recs:
 					recs=r	
 				if r:

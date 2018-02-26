@@ -374,7 +374,7 @@ class herstens_destination (models.Model):
 	ref=fields.Char()
 	remarks=fields.Char()
 	rit_id=fields.Many2one('hertsens.rit')
-	sequence=fields.Integer(required=True, default=100)
+	sequence=fields.Integer(required=True, default=1)
 	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict', required=True)
 	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
@@ -390,7 +390,11 @@ class herstens_destination (models.Model):
 				place.cancel_transics_planning()
 				self.status='cancelled'
 
-
+	@api.one			
+	def _caclculate_sequence(self):
+		self.sequence_calc=self.sequence
+		return self.sequence			
+	sequence_calc=fields.Integer(string="Seq", compute=_caclculate_sequence)
 
 	@api.multi
 	def checkstatus(self):
