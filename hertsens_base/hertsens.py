@@ -177,26 +177,26 @@ class hertsens_rit(models.Model):
 
 	@api.multi
 	def checkstatus(self):
-		for dest in self.destination_ids:
-			if dest.employee_id:
-				self.driver_id=dest.employee_id
-		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
-			self.state='planned'
-			return
-		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
-			self.state='dispatched'
-			return
-		if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
-			#self.state='completed'
-			self.cmr=""
-			for hist in self.hist_ids:
-				if self.cmr and hist.cmr:
-					self.cmr += ","
-				if hist.cmr:
-					self.cmr+=hist.cmr
-			self.finished=True
-			self._checkstate()
-			return
+		if len(self)==1:
+			for dest in self.destination_ids:
+				if dest.employee_id:
+					self.driver_id=dest.employee_id
+			if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
+				self.state='planned'
+				return
+			if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
+				self.state='dispatched'
+			if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
+				#self.state='completed'
+				self.cmr=""
+				for hist in self.hist_ids:
+					if self.cmr and hist.cmr:
+						self.cmr += ","
+					if hist.cmr:
+						self.cmr+=hist.cmr
+				self.finished=True
+				self._checkstate()
+				return
 
 
 	@api.multi
@@ -407,7 +407,10 @@ class herstens_destination (models.Model):
 			if hist.status=='FINISHED':
 				self.state='completed'
 			self.employee_id=hist.employee_id
-			self.rit_id.checkstatus()
+			if self.rit_id:
+				self.rit_id.checkstatus()
+			else:
+				_logger.warning("Destination without ride, last hist: %s" % hist.place_id)
 		
 
 		
