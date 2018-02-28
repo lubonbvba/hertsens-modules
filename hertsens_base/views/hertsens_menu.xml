@@ -283,10 +283,10 @@
           </group>
         </group>
           <field name="destination_ids" options='{"always_reload": True}'>
-             <tree string="Destinations" editable="bottom" default_order="sequence">
+             <tree string="Destinations" editable="bottom">
                <field name="sequence" widget="handle" readonly='1'/>
                <field name="sequence_calc"/>
-               <field name="id" invisible="1" />
+               <field name="id" invisible="0" />
                <field name="rit_id"  invisible="1"/>
                 <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False,  'default_customer': False,'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 
                 <!--field name="destination" /-->
@@ -605,7 +605,7 @@
                                 <field name="geo_ok"/>
                                 <field name="geo_longitude" readonly="0"/>
                                 <field name="geo_latitude" readonly="0"/>
-                                <field name="geo_name" readonly="1"/>
+                                <field name="geo_name" readonly="0"/>
                                 <field name="geo_google_maps_url" string="Google" widget="url"/>
                                 <button type="object" name="get_geo" string="Geo"/>
                             </group>

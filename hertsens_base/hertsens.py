@@ -136,23 +136,25 @@ class hertsens_rit(models.Model):
 	@api.one
 	@api.onchange('finished','refklant','ritprijs', 'datum','cmr')
 	def _checkstate(self):
-		flagvalid=True
-		if self.ritprijs==0:
-			flagvalid=False
-		if not self.cmr:
-			flagvalid=False
-		if self.partner_id.ref_required and not self.refklant:
-			flagvalid=False
-		if self.finished:
-			if flagvalid:
-				self.state='toinvoice'
+		if self.state not in ['cancelled']:
+		# do not change state if ride is cancelled	
+			flagvalid=True
+			if self.ritprijs==0:
+				flagvalid=False
+			if not self.cmr:
+				flagvalid=False
+			if self.partner_id.ref_required and not self.refklant:
+				flagvalid=False
+			if self.finished:
+				if flagvalid:
+					self.state='toinvoice'
+				else:
+					self.state='waiting'
 			else:
-				self.state='waiting'
-		else:
-			if fields.Date.context_today(self)>self.datum:
-				self.state='completed'
-			else:
-				self.state='planned'
+				if fields.Date.context_today(self)>self.datum:
+					self.state='completed'
+				else:
+					self.state='planned'
 	@api.one			
 	@api.depends('destination_ids')			
 	def _compute_google_navigation_url(self):			
@@ -366,15 +368,15 @@ class hertsens_rit(models.Model):
 
 class herstens_destination (models.Model):
 	_name="hertsens.destination"
-	_order="sequence"
+	_order="rit_id,sequence,id"
 	_rec_name = 'destination'
 
 	
 	destination=fields.Char()
 	ref=fields.Char()
 	remarks=fields.Char()
-	rit_id=fields.Many2one('hertsens.rit')
-	sequence=fields.Integer(required=True, default=1)
+	rit_id=fields.Many2one('hertsens.rit', ondelete='cascade')
+	sequence=fields.Integer(required=True, default=10)
 	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict', required=True)
 	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
@@ -389,7 +391,6 @@ class herstens_destination (models.Model):
 			if place.status == "NOT_EXECUTED":
 				place.cancel_transics_planning()
 				self.status='cancelled'
-
 	@api.one			
 	def _caclculate_sequence(self):
 		self.sequence_calc=self.sequence
@@ -425,8 +426,8 @@ class herstens_destination_hist (models.Model):
 	_sql_constraints = {
 		('place_id_uniq', 'unique(place_id)', 'Place ID not unique, contact Lubon')
 	}
-	hertsens_destination_id=fields.Many2one('hertsens.destination')
-	ride_id=fields.Many2one('hertsens.rit')
+	hertsens_destination_id=fields.Many2one('hertsens.destination' , ondelete='restrict')
+	ride_id=fields.Many2one('hertsens.rit', ondelete='restrict')
 	state=fields.Selection([('sent','Sent'),('cancelled','Cancelled')])
 	place_id=fields.Char()
 	vehicle_id=fields.Many2one('fleet.vehicle')
