@@ -22,7 +22,7 @@
 					<notebook>
 						<page string="Destinations">
 							<field name="destination_ids" >
-								<tree default_order="sequence" editable="top" options='{"always_reload": True}' create="false">
+								<tree editable="top" options='{"always_reload": True}' create="false">
 									<field name="sequence" widget="handle"/>
 									<field name="destination_id" invisible="1"/>
 									<field name="ride_id" readonly="1"/>

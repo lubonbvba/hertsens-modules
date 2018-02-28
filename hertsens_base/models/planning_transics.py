@@ -31,10 +31,10 @@ class planning_transics_wizard(models.TransientModel):
 
 	def _get_destinations(self,ride_ids):
 		res=[]	
-		n=100
+		n=10
 		for ride in ride_ids:
-			for dest in ride.destination_ids.sorted(key=lambda l: l.sequence):
-				n+=100
+			for dest in ride.destination_ids:
+				n+=10
 				new=self.env['planning.transics.destination'].create({
 					'destination_id': dest.id,
 					'sequence':n,
@@ -62,6 +62,8 @@ class planning_transics_wizard(models.TransientModel):
 
 class planning_transics_destination(models.TransientModel):
 	_name = "planning.transics.destination"
+	_order="sequence,id"
+
 	destination_id=fields.Many2one('hertsens.destination' )
 	sequence=fields.Integer()
 	name=fields.Char()
