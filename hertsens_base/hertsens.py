@@ -180,7 +180,7 @@ class hertsens_rit(models.Model):
 	@api.multi
 	def checkstatus(self):
 		if len(self)==1:
-			if state not in ['invoiced']:
+			if self.state not in ['invoiced']:
 				for dest in self.destination_ids:
 					if dest.employee_id:
 						self.driver_id=dest.employee_id
