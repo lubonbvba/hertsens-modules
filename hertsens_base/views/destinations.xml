@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record model="ir.actions.act_window" id="destination_action">
+			<field name="name">Destinations</field>
+			<field name="res_model">hertsens.destination</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<record model="ir.ui.view" id="destination_search_view" >
+			<field name="name">hertsens_base.destaination_search</field>
+			<field name="model">hertsens.destination</field>
+			<field name="arch" type="xml">
+				<search string="Search Destinations">
+					<field name="activity_id"/>
+					<filter name="place_empty" string="Place Empty" domain="[('place_id','=',False)]"/>
+				</search>
+			</field>
+		</record>
+
+
+		<record model="ir.ui.view" id="destination_tree">
+			<field name="name">hertsens_base.destination_tree</field>
+			<field name="model">hertsens.destination</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="place_id"/>
+					<field name="activity_id"/>
+					<field name="transics_activity_id"/>
+				</tree>
+			</field>
+		</record>
+		<menuitem id="destinations_menu" name="Destinations" parent="transics.menu_config_transics" action="destination_action"/>
+	</data>
+</openerp>

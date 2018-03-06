@@ -136,8 +136,8 @@ class hertsens_rit(models.Model):
 	@api.one
 	@api.onchange('finished','refklant','ritprijs', 'datum','cmr')
 	def _checkstate(self):
-		if self.state not in ['cancelled']:
-		# do not change state if ride is cancelled	
+		if self.state not in ['cancelled','invoiced']:
+		# do not change state if ride is cancelled, invoiced
 			flagvalid=True
 			if self.ritprijs==0:
 				flagvalid=False
@@ -180,25 +180,26 @@ class hertsens_rit(models.Model):
 	@api.multi
 	def checkstatus(self):
 		if len(self)==1:
-			for dest in self.destination_ids:
-				if dest.employee_id:
-					self.driver_id=dest.employee_id
-			if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
-				self.state='planned'
-				return
-			if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
-				self.state='dispatched'
-			if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
-				#self.state='completed'
-				self.cmr=""
-				for hist in self.hist_ids:
-					if self.cmr and hist.cmr:
-						self.cmr += ","
-					if hist.cmr:
-						self.cmr+=hist.cmr
-				self.finished=True
-				self._checkstate()
-				return
+			if state not in ['invoiced']:
+				for dest in self.destination_ids:
+					if dest.employee_id:
+						self.driver_id=dest.employee_id
+				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
+					self.state='planned'
+					return
+				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
+					self.state='dispatched'
+				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
+					#self.state='completed'
+					self.cmr=""
+					for hist in self.hist_ids:
+						if self.cmr and hist.cmr:
+							self.cmr += ","
+						if hist.cmr:
+							self.cmr+=hist.cmr
+					self.finished=True
+					self._checkstate()
+					return
 
 
 	@api.multi
@@ -363,6 +364,11 @@ class hertsens_rit(models.Model):
             }
    		#pdb.set_trace()
    		return action
+	@api.one
+	def _get_valid_activity_ids(self):
+		self.valid_activity_ids=self.env['transics.activity'].search([('transics_account_id', '=', self.env.user.company_id.transics_account_id.id),('dispatch_enabled','!=',False)])
+
+	valid_activity_ids=fields.Many2many("transics.activity", compute="_get_valid_activity_ids")
 
 
 
@@ -378,13 +384,18 @@ class herstens_destination (models.Model):
 	rit_id=fields.Many2one('hertsens.rit', ondelete='cascade')
 	sequence=fields.Integer(required=True, default=10)
 	place_id=fields.Many2one('res.partner', string="Location", ondelete='restrict', required=True)
-	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , required=True)
+	activity_id=fields.Selection([('load','Load'),('unload','Unload')] , zrequired=True, readonly=True)
+	transics_activity_id=fields.Many2one('transics.activity', string="Act" ,required=True, domain="[('id','in',valid_activity_ids[0][2])]", ondelete='restrict')
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
 	employee_id=fields.Many2one('hr.employee', string="Driver", copy=False)
 
 	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('received', 'Received'),('read', 'Read'),('cancelled', 'Cancelled'),('progress','In progress'),('completed','Completed')], required=True, default='planned')
 	hist_ids=fields.One2many('hertsens.destination.hist','hertsens_destination_id')
-	
+
+	valid_activity_ids=fields.Many2many("transics.activity", related='rit_id.valid_activity_ids')
+
+
+
 	@api.multi
 	def cancel_transics_planning(self):
 		for place in self.hist_ids:
@@ -448,6 +459,9 @@ class herstens_destination_hist (models.Model):
 	arrivaldate=fields.Datetime()
 	leavingdate=fields.Datetime()
 	geo_lookupname=fields.Char()
+	transics_activity_id=fields.Many2one('transics.activity', related='hertsens_destination_id.transics_activity_id')
+	activity_id=fields.Selection( related='hertsens_destination_id.activity_id')
+
 	@api.multi
 	def create_transics_planning(self, destination_id, vehicle_id,ref,remarks,wiz_id):
 		hist=self.env['hertsens.destination.hist'].create({
@@ -474,10 +488,13 @@ class herstens_destination_hist (models.Model):
 #				'SalesPrice':'True'
 		}
 		#Set activity field
-		if hist.hertsens_destination_id.activity_id == 'load':
-			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_load_id', '')
-		if hist.hertsens_destination_id.activity_id == 'unload':
-			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
+#		if hist.hertsens_destination_id.activity_id == 'load':
+#			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_load_id', '')
+#		if hist.hertsens_destination_id.activity_id == 'unload':
+#			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
+		placesinsert['Activity']['ID']=hist.hertsens_destination_id.transics_activity_id.transics_id
+
+
 		#Complet Comment field	
 		if ref:	
 			placesinsert['Comment']	+= '\nRef: ' + ref
@@ -488,7 +505,8 @@ class herstens_destination_hist (models.Model):
 		nseq+=10
 		places.append(placesinsert)
 		planninginsert['Places']={'PlaceInsert':places}
-		response=self.env['transics.transics'].Insert_Planning(planninginsert)
+#		response=self.env['transics.transics'].Insert_Planning(planninginsert)
+		response=self.env.user.company_id.transics_account_id.Insert_Planning(planninginsert)
 		if response['Errors']:
 			raise exceptions.Warning(response)
 		else:
@@ -501,7 +519,8 @@ class herstens_destination_hist (models.Model):
 		planningitemselection={'PlanningSelectionType':'PLACE',
 								'ID':self.place_id
 								}
-		response=self.env['transics.transics'].Cancel_Planning(planningitemselection)
+#		response=self.env['transics.transics'].Cancel_Planning(planningitemselection)
+		response=self.env.user.company_id.transics_account_id.Cancel_Planning(planningitemselection)
 		if response['Errors']:
 			raise exceptions.Warning(response)
 		else:

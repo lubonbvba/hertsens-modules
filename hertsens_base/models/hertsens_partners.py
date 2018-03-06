@@ -44,7 +44,7 @@ class res_partner(models.Model):
 
 	@api.multi
 	def get_geo(self):
-		response=self.env['transics.transics'].Get_PositionFromStreetInfo(City=self.city,PostalCode=self.zip,Street=self.street,CountryCode=self.country_id.code_alpha3,)
+		response=self.env.user.company_id.transics_account_id.Get_PositionFromStreetInfo(City=self.city,PostalCode=self.zip,Street=self.street,CountryCode=self.country_id.code_alpha3,)
 
 		self.geo_name=response['Position']['Name']
 		self.geo_latitude=response['Position']['Latitude']

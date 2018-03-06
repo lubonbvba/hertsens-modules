@@ -14,7 +14,7 @@ class hertsens_rit(models.Model):
     ('last_msg_uniq', 'unique(last_msg)', 'Last msg is niet uniek. Luc Bonjean verwittigen aub')
     }
 	vehicle_type_id=fields.Many2one('fleet.vehicle.type', string="Vehicle type")
-	task_ids=fields.One2many('project.task','ride_id')
+	#task_ids=fields.One2many('project.task','ride_id')
 #	driver_id=fields.Many2one('res.users')
 #	driver_id=fields.Many2one('hr.employee')
 #	vehicle_id=fields.Many2one("fleet.vehicle")

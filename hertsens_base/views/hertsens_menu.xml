@@ -10,6 +10,8 @@
                         <group>
                             <field name="place_id"/>
                             <field name="ride_id"/>
+                            <field name="transics_activity_id" readonly="1"/>
+                            <field name="activity_id"/>
                             <field name="vehicle_id"/>
                             <field name="employee_id"/>
                             <field name="cmr"/>
@@ -43,6 +45,7 @@
                 <tree string="History" default_order="lastupdate DESC">
                             <field name="place_id"/>
                             <field name="ride_id"/>
+                            <field name="transics_activity_id"/>
                             <field name="vehicle_id"/>
                             <field name="employee_id"/>
                             <field name="cmr"/>
@@ -290,7 +293,9 @@
                <field name="rit_id"  invisible="1"/>
                 <field name="place_id" context="{'show_address_line':1,  'form_view_ref':'hertsens_base.view_address_simple_form', 'default_type': 'place', 'default_is_company': False,  'default_customer': False,'default_country_id': %(base.be)d}" options='{"always_reload": True,"no_quick_create":True}' domain="[('type','=','place')]"/> 
                 <!--field name="destination" /-->
-               <field name="activity_id" />              
+               <!--field name="activity_id" /-->              
+               <field name="transics_activity_id" options="{'no_quick_create':True,'no_create_edit':True, 'no_open':True}" attrs="{'readonly':[('state','not in',['planned','cancelled'])]}"/>              
+               <field name="valid_activity_ids" widget='many2many_tags' invisible="1" />              
                <field name="state" readonly="True" />              
                <field name="vehicle_id" readonly="True" />              
                <field name="employee_id" readonly="True" />              
@@ -640,6 +645,11 @@
 
         <menuitem id="hertsens_invoices_menu_her" name="Hertsens" parent="hertsens_invoices_menu" sequence="1" action="hertsens_her_invoices_action" groups="hertsens_base.group_hertsens_user_her" />
         <menuitem id="hertsens_invoices_menu_jlh" name="JLH Logistics" parent="hertsens_invoices_menu" sequence="1" action="hertsens_jlh_invoices_action" groups="hertsens_base.group_hertsens_user_jlh" />
+
+
+
+
+
 
     </data>
 </openerp>

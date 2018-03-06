@@ -43,6 +43,7 @@ class planning_transics_wizard(models.TransientModel):
 					'remarks':dest.remarks,
 					'state':dest.state,
 					'activity':dest.activity_id,
+					'transics_activity_id':dest.transics_activity_id.id,
 					'ride_id':dest.rit_id.id,
 					'wizard_id':self.id,
 					})
@@ -73,6 +74,7 @@ class planning_transics_destination(models.TransientModel):
 	dispatch=fields.Boolean()
 	ride_id=fields.Integer()
 	activity=fields.Char()
+	transics_activity_id=fields.Many2one('transics.activity')
 	wizard_id=fields.Many2one('planning.transics.wizard')
 
 
