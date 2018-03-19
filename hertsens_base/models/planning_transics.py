@@ -47,7 +47,7 @@ class planning_transics_wizard(models.TransientModel):
 					'ride_id':dest.rit_id.id,
 					'wizard_id':self.id,
 					})
-				if new.state in ['planned','cancelled']:
+				if new.state in ['planned','cancelled','aborted']:
 					new.dispatch=True
 				res.append(new.id)
 		return res		

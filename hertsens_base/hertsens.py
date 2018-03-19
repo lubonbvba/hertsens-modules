@@ -184,11 +184,12 @@ class hertsens_rit(models.Model):
 				for dest in self.destination_ids:
 					if dest.employee_id:
 						self.driver_id=dest.employee_id
-				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled'])]):
+				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled', 'aborted'])]):
 					self.state='planned'
 					return
 				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
 					self.state='dispatched'
+					return
 				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
 					#self.state='completed'
 					self.cmr=""
@@ -389,7 +390,7 @@ class herstens_destination (models.Model):
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
 	employee_id=fields.Many2one('hr.employee', string="Driver", copy=False)
 
-	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('received', 'Received'),('read', 'Read'),('cancelled', 'Cancelled'),('progress','In progress'),('completed','Completed')], required=True, default='planned')
+	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('received', 'Received'),('read', 'Read'),('cancelled', 'Cancelled'),('aborted', 'Aborted'),('progress','In progress'),('completed','Completed')], required=True, default='planned')
 	hist_ids=fields.One2many('hertsens.destination.hist','hertsens_destination_id')
 
 	valid_activity_ids=fields.Many2many("transics.activity", related='rit_id.valid_activity_ids')
@@ -414,6 +415,8 @@ class herstens_destination (models.Model):
 			hist=self.hist_ids[-1]
 			if hist.status=='CANCELED':
 				self.state='cancelled'
+			if hist.status=='ABORTED':
+				self.state='aborted'	
 			if hist.transferstatus == 'READ_PLANNING':
 				self.state='read'
 			if hist.status=='NOT_EXECUTED' and hist.transferstatus=='DELIVERED':

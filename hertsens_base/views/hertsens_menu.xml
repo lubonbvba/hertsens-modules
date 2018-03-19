@@ -287,7 +287,7 @@
         </group>
           <field name="destination_ids" options='{"always_reload": True}'>
              <tree string="Destinations" editable="bottom">
-               <field name="sequence" widget="handle" readonly='1'/>
+               <field name="sequence" widget="handle" readonly='0'/>
                <field name="sequence_calc"/>
                <field name="id" invisible="0" />
                <field name="rit_id"  invisible="1"/>

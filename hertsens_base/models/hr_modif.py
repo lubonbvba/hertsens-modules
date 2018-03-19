@@ -7,5 +7,5 @@ class employee(models.Model):
 	_sql_constraints = {
 	('transics_id_uniq', 'unique(transics_id)', 'Transics ID has to be unique')
     	}
-	tasks_ids=fields.One2many('project.task', 'employee_id')
+	#tasks_ids=fields.One2many('project.task', 'employee_id')
 	transics_id=fields.Char(help='String')

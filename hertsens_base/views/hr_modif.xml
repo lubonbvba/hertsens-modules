@@ -6,7 +6,7 @@
 			<field name="model">hr.employee</field>
 			<field name="inherit_id" ref="hr.view_employee_form"/>
 			<field name="arch" type="xml">
-				<page string="HR Settings" position="after">
+<!-- 				<page string="HR Settings" position="after">
 					<page string="Hertsens">
 						<field name="tasks_ids">
 							<tree default_order="date_start desc">
@@ -18,7 +18,7 @@
 							</tree>
 						</field>
 					</page>
-				</page>
+				</page> -->
 				<field name="work_location" position="after">
 					<field name="transics_id"/>
 				</field>
