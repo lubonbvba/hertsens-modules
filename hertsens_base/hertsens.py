@@ -479,7 +479,7 @@ class herstens_destination_hist (models.Model):
 		nseq=10
 		planninginsert= {'Vehicle':{'IdentifierVehicleType':'ID','Id':vehicle_id.vehicle_transics_id }}
 		placesinsert={
-			'OrderSeq':nseq,
+			'OrderSeq':hist.id,
 			'PlaceId':hist.place_id,
 			'DriverDisplay': ('ID:' + ' ' + str(hist.ride_id.id ) + ',('+ hist.hertsens_destination_id.place_id.country_id.code + ') ' + (hist.hertsens_destination_id.place_id.geo_name or "Onbekend"))[:50],
 			'Comment':  hist.hertsens_destination_id.place_id.name + ", " + (hist.hertsens_destination_id.place_id.geo_name or "Onbekend"),  
@@ -496,7 +496,7 @@ class herstens_destination_hist (models.Model):
 #		if hist.hertsens_destination_id.activity_id == 'unload':
 #			placesinsert['Activity']['ID']=self.env['ir.config_parameter'].get_param('transics.act_unload_id', '')
 		placesinsert['Activity']['ID']=hist.hertsens_destination_id.transics_activity_id.transics_id
-
+		#pdb.set_trace()
 
 		#Complet Comment field	
 		if ref:	
