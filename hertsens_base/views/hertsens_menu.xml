@@ -7,6 +7,7 @@
     <field name="arch" type="xml">
         <search string="Search Hist">
             <filter name="LastUpdateEmpty" string="Last Update Empty" domain="[('lastupdate','=',False)]"/>
+            <filter name="Not Executed" string="Not Executed" domain="[('status','=','NOT_EXECUTED')]"/>
      </search>
  </field>
 </record>
