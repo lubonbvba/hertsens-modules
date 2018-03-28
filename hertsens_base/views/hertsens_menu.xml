@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="iew_hertsens_destination_hist_search" >
+    <field name="name">hertsens.destination.hist.search</field>
+    <field name="model">hertsens.destination.hist</field>
+    <field name="arch" type="xml">
+        <search string="Search Hist">
+            <filter name="LastUpdateEmpty" string="Last Update Empty" domain="[('lastupdate','=',False)]"/>
+     </search>
+ </field>
+</record>
         <record id="view_hertsens_destination_hist_form" model="ir.ui.view">
             <field name="name">hertsens.destination.hist.form</field>
             <field name="model">hertsens.destination.hist</field>
@@ -44,6 +53,7 @@
             <field name="arch" type="xml">
                 <tree string="History" default_order="lastupdate DESC">
                             <field name="place_id"/>
+                            <field name="create_date"/>
                             <field name="ride_id"/>
                             <field name="transics_activity_id"/>
                             <field name="vehicle_id"/>
