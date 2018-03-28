@@ -400,7 +400,7 @@ class herstens_destination (models.Model):
 	@api.multi
 	def cancel_transics_planning(self):
 		for place in self.hist_ids:
-			if (place.status == "NOT_EXECUTED" or place.lastupdate == False) and self.state in ['dispatched']:
+			if (place.status == "NOT_EXECUTED" or place.lastupdate == False) and self.state in ['dispatched','received','read']:
 				place.cancel_transics_planning()
 				self.status='cancelled'
 				place.cancelstatus='cancel_sent'
