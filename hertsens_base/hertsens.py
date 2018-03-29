@@ -206,7 +206,7 @@ class hertsens_rit(models.Model):
 		#functie om statussen na te kijken bij gereden ritten en evt cmr info up te daten.
 		#via meer menu
 		for rit in self:
-			if rit.gereden:
+			if rit.finished:
 				new_cmr=""
 				for hist in rit.hist_ids:
 					if new_cmr and hist.cmr:
