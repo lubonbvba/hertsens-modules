@@ -90,6 +90,21 @@
         <field name="value" eval="'ir.actions.server,%d'%dditem2_action"/>
 </record>
 
+<record id="dditem3_action" model="ir.actions.server">
+        <field name="name">Update ride</field>
+        <field name="model_id" ref="model_hertsens_rit"/>
+        <field name="state">code</field>
+        <field name="condition">True</field>
+        <field name="code">self.browse(cr,uid,context.get('active_ids', [])).refresh_ride()</field>
+</record>
+<record id="dditem3" model="ir.values">
+        <field name="name">name3</field>
+        <field name="model">hertsens.rit</field>
+        <field name="key" >action</field>
+        <field name="key2">client_action_multi</field>
+        <field name="value" eval="'ir.actions.server,%d'%dditem3_action"/>
+</record>
+
 
 
 	</data>

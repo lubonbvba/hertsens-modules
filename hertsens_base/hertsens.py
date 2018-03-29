@@ -201,7 +201,21 @@ class hertsens_rit(models.Model):
 					self.finished=True
 					self._checkstate()
 					return
-
+	@api.multi
+	def refresh_ride(self):
+		#functie om statussen na te kijken bij gereden ritten en evt cmr info up te daten.
+		#via meer menu
+		for rit in self:
+			if rit.gereden:
+				new_cmr=""
+				for hist in rit.hist_ids:
+					if new_cmr and hist.cmr:
+						new_cmr += ","
+					if hist.cmr:
+						new_cmr+=hist.cmr
+				if new_cmr:
+					rit.cmr=new_cmr
+				rit._checkstate()			
 
 	@api.multi
 	def _prepare_cost_invoice(self, partner_id):
