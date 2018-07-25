@@ -44,10 +44,10 @@ class hertsens_rit(models.Model):
 	refklant=fields.Char(string="Ref", help="Referentie opgegeven door klant")
 	charges_vat=fields.Float(help="Reimbursements vat")
 	charges_exvat=fields.Float(help="Reimbursements vat exempt")
-	invoice_id=fields.Many2one('account.invoice')
+	invoice_id=fields.Many2one('account.invoice', ztrack_visibility='onchange')
 	destination_ids=fields.One2many('hertsens.destination','rit_id')
 	finished=fields.Boolean(help="Tick if ride is finished")
-	state=fields.Selection([('quoted','Quote'),('planned','Planned'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned')
+	state=fields.Selection([('quoted','Quote'),('planned','Planned'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned', ztrack_visibility='onchange')
 	on=fields.Char(required=True,default="on")
 	is_recurring=fields.Boolean(help="Tick if recurring", copy=False)
 	recurring_active=fields.Boolean(help="Is active?", copy=False)
@@ -178,13 +178,24 @@ class hertsens_rit(models.Model):
 			#raise exceptions.Warning("Probleem met lege bestemming, id: %d", self.id )			
 
 	@api.multi
-	def checkstatus(self):
+	def check_rit_status(self):
 		if len(self)==1:
-			if self.state not in ['invoiced']:
+			if self.state not in ['invoiced','toinvoice']:
+				for hist in self.hist_ids:
+					if hist.cmr:
+						#cmr exists in hist
+						if not self.cmr:
+							#no cmr exixte yet
+							self.cmr=hist.cmr
+						elif self.cmr.find(hist.cmr) == -1:
+							#cmr exists end hist.crm not founf in cmr
+							self.cmr += ","
+							self.cmr+=hist.cmr				
 				for dest in self.destination_ids:
 					if dest.employee_id:
 						self.driver_id=dest.employee_id
-				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled', 'aborted'])]):
+#				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned','cancelled', 'aborted'])]):
+				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['planned'])]):
 					self.state='planned'
 					return
 				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['received','read','progress'])]):
@@ -192,12 +203,8 @@ class hertsens_rit(models.Model):
 					return
 				if self.destination_ids.search(['&',('rit_id',"=",self.id),('state','in',['completed'])]):
 					#self.state='completed'
-					self.cmr=""
-					for hist in self.hist_ids:
-						if self.cmr and hist.cmr:
-							self.cmr += ","
-						if hist.cmr:
-							self.cmr+=hist.cmr
+					#self.cmr=""
+
 					self.finished=True
 					self._checkstate()
 					return
@@ -425,7 +432,7 @@ class herstens_destination (models.Model):
 	sequence_calc=fields.Integer(string="Seq", compute=_caclculate_sequence)
 
 	@api.multi
-	def checkstatus(self):
+	def check_dest_status(self):
 		if len(self.hist_ids)>0:
 			hist=self.hist_ids[-1]
 			if hist.status=='CANCELED':
@@ -442,7 +449,7 @@ class herstens_destination (models.Model):
 				self.state='completed'
 			self.employee_id=hist.employee_id
 			if self.rit_id:
-				self.rit_id.checkstatus()
+				self.rit_id.check_rit_status()
 			else:
 				_logger.warning("Destination without ride, last hist: %s" % hist.place_id)
 		
