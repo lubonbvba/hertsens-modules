@@ -594,15 +594,15 @@ class invoice(models.Model):
 		
 		self.rides_csv_data="date,departure,destination,cmr,ref,price,charges_vat,charges_exvat,total\n"
 		for ride in self.rides_ids:
-			self.rides_csv_data += "%s," % ride.datum
-			self.rides_csv_data += "%s," % ride.vertrek
-			self.rides_csv_data += "%s," % ride.bestemming
-			self.rides_csv_data += "%s," % ride.cmr
-			self.rides_csv_data += "%s," % ride.refklant
-			self.rides_csv_data += "%s," % ride.ritprijs
-			self.rides_csv_data += "%s," % ride.charges_vat
-			self.rides_csv_data += "%s," % ride.charges_exvat
-			self.rides_csv_data += "%s," % ride.total_ride_price
+			self.rides_csv_data += "\"%s\"," % ride.datum
+			self.rides_csv_data += "\"%s\"," % unicode(ride.vertrek).encode('ascii','ignore')
+			self.rides_csv_data += "\"%s\"," % unicode(ride.bestemming).encode('ascii','ignore')
+			self.rides_csv_data += '\"%s\",' % unicode(ride.cmr).encode('ascii','ignore')
+			self.rides_csv_data += "\"\'%s\"," % unicode(ride.refklant).encode('ascii','ignore')
+			self.rides_csv_data += "\"%s\"," % ride.ritprijs
+			self.rides_csv_data += "\"%s\"," % ride.charges_vat
+			self.rides_csv_data += "\"%s\"," % ride.charges_exvat
+			self.rides_csv_data += "\"%s\"," % ride.total_ride_price
 			self.rides_csv_data += "\n" 
 		self.rides_csv_data=base64.encodestring(self.rides_csv_data.encode('utf-8'))	
 		#pdb.set_trace()
