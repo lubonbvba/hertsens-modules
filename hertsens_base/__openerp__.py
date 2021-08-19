@@ -20,7 +20,7 @@
     'version': '0.44',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account', 'entity_sms', 'base_iso3166', 'transics', 'project', 'fleet','hr'],
+    'depends': ['base', 'account_invoice_ubl','entity_sms', 'base_iso3166', 'transics', 'project', 'fleet','hr'],
 
     # always loaded
     'data': [

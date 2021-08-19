@@ -301,11 +301,12 @@ class hertsens_rit(models.Model):
 			#pdb.set_trace()
 			ride=rides[0]
 			curr_invoice = {
-			'name': "%s - %s" % (time.strftime('%d/%m/%Y'), ride.partner_id.name),
+			'name': data['ref'] or "%s - %s" % (time.strftime('%d/%m/%Y'), ride.partner_id.name),
         	'partner_id': ride.partner_id.id,
         	'company_id': ride.company_id.id,
         	'payment_term': ride.partner_id.property_payment_term.id or False,
-        	'date': data['date'],
+		'payment_mode_id': ride.partner_id.customer_payment_mode.id, 
+        	'date_invoice': data['date'],
         	'account_id': ride.partner_id.property_account_receivable.id,
 		#            'currency_id': currency_id,
 		#            'date_due': date_due,
@@ -638,6 +639,7 @@ class hertsens_invoice_create(models.TransientModel):
 	date=fields.Date(string="Invoice date",required=True, default=date.today())
 	oneline=fields.Boolean(default=True,help="1 invoice line for all rides?")
 	allrides_valid=fields.Boolean(default=False)
+	ref=fields.Char()	
 	def _default_rides(self):
 		return self._context.get('active_ids')
 	rides_ids=fields.Many2many('hertsens.rit', default=_default_rides)
