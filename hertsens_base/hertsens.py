@@ -637,7 +637,7 @@ class res_company(models.Model):
 class hertsens_invoice_create(models.TransientModel):
 	_name='hertsens.invoice.create'
 	date=fields.Date(string="Invoice date",required=True, default=date.today())
-	oneline=fields.Boolean(default=True,help="1 invoice line for all rides?")
+	oneline=fields.Boolean(default=False,help="1 invoice line for all rides?")
 	allrides_valid=fields.Boolean(default=False)
 	ref=fields.Char()	
 	def _default_rides(self):
