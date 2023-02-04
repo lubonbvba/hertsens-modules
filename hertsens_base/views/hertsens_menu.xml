@@ -418,7 +418,7 @@
              <filter name="group_by_partner" string="Customer" context="{'group_by':'partner_id'}"/>
              <filter name="group_by_vehicle_type_id" string="Voertuigtype" context="{'group_by':'vehicle_type_id'}"/>
 
-             <filter string="Salesperson" context="{'group_by':'user_id'}"/>
+             <!-- filter string="Salesperson" context="{'group_by':'user_id'}"/-->
              <separator/>
              <filter string="Status" context="{'group_by':'state'}"/>
          </group>
