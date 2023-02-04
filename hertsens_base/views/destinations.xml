@@ -26,6 +26,7 @@
 				<tree>
 					<field name="place_id"/>
 					<field name="activity_id"/>
+					<field name="datum"/>
 					<field name="transics_activity_id"/>
 				</tree>
 			</field>

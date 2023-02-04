@@ -31,8 +31,12 @@
                                 <field name="geo_longitude" readonly="0"/>
                                 <field name="geo_latitude" readonly="0"/>
                                 <field name="geo_name" readonly="1"/>
+                                <field name="geo_street" readonly="1"/>
+                                <field name="geo_zip" readonly="1"/>
+                                <field name="geo_city" readonly="1"/>
                                 <field name="geo_google_maps_url" string="Google" widget="url"/>
                                 <button type="object" name="get_geo" string="Geo"/>
+                                <button type="object" name="copy_geo" string="Copy Geo" help="Kopieert geo adres naar volledig adres."/>
                             </group>
                   </page> 
                   <page string="Hist">
@@ -54,6 +58,8 @@
             <field name="arch" type="xml">
                 <field name="email" position="after">
                    <field name="diesel" />
+                   <field name="geo_ok" />
+                   <field name="active" />
                     <field name="ref_required" />
                 </field>
             </field>
@@ -65,6 +71,8 @@
             <field name="arch" type="xml">
                 <filter name="supplier" position="after">  
                     <filter string="Places" name="places" domain="[('type','=','place')]" help="Geo places"/>            
+                    <filter string="Geo OK" name="geo_ok" domain="['&amp;',('type','=','place'),('geo_ok','=',True)]" help="Place en Geo is ok"/>            
+                    <filter string="Geo nt OK" name="geo_nt_ok" domain="['&amp;',('type','=','place'),('geo_ok','!=',True)]" help="Place en Geo is niet ok"/>            
                 </filter>
 
             </field>

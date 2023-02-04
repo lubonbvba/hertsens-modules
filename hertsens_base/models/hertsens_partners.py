@@ -28,9 +28,12 @@ class res_partner(models.Model):
 	geo_longitude=fields.Float(String="Longitude (X)", digits=(16, 5))
 	geo_latitude=fields.Float(String="Latitude (Y)",digits=(16, 5))
 	geo_name=fields.Char()
-	geo_ok=fields.Boolean(help='Geo of place is found, not modifiable')
+	geo_ok=fields.Boolean(help='Dit veld komt automatisch op True als bij de geo lookup de straat, postcode en plaats overeenkomt. De geo lookup gebeurt door transics. Als transics de plaats niet kent, is het geo name veld leeg.')
 	geo_google_maps_url=fields.Char(compute='_compute_geo_google_maps_url')
 	hertsens_destination_ids=fields.One2many('hertsens.destination','place_id')
+	geo_street=fields.Char()
+	geo_zip=fields.Char()
+	geo_city=fields.Char()
 
 #	display_name = fields.Char(string='Name', compute='_display_name_compute2')
 	type=fields.Selection(selection_add=[('place','Place')])
@@ -41,6 +44,14 @@ class res_partner(models.Model):
 		for record in self:
 			if record.geo_latitude and record.geo_longitude:
 				record.geo_google_maps_url='https://www.google.com/maps/search/?api=1&query=' + str(record.geo_latitude) + ','+ str(record.geo_longitude)
+	@api.multi
+	def copy_geo(self):
+		self.street=self.geo_street
+		self.zip=self.geo_zip
+		self.city=self.geo_city
+		if self.street.upper()==self.geo_street.upper() and self.zip.upper()==self.geo_zip.upper() and self.geo_city.upper()==self.city.upper():
+			self.geo_ok=True
+
 
 	@api.multi
 	def get_geo(self):
@@ -49,12 +60,19 @@ class res_partner(models.Model):
 		self.geo_name=response['Position']['Name']
 		self.geo_latitude=response['Position']['Latitude']
 		self.geo_longitude=response['Position']['Longitude']
-
 		if self.geo_name and len(self.geo_name)>0:
 			self.geo_ok=False #True
+			self.geo_street=self.geo_name.split(',')[0].strip()
+			self.geo_zip=self.geo_name.split('(')[1].split(')')[0].strip()
+			self.geo_city=self.geo_name.partition(',')[2].split('(')[0].strip()
+			if self.street.upper()==self.geo_street.upper() and self.zip.upper()==self.geo_zip.upper() and self.geo_city.upper()==self.city.upper():
+				self.geo_ok=True
 		else:
 			self.geo_ok=False
 			self.geo_name=None
+			self.geo_street=None
+			self.geo_city=None
+			self.geo_zip=None
 			self.geo_latitude=0
 			self.geo_longitude=0		
 			raise Warning (_('No location found'))
@@ -86,9 +104,10 @@ class res_partner(models.Model):
 			#pdb.set_trace()
 			res=[]
 			for partner in self:
-				name=partner.name  
-			#	if partner.type == "place":
-			#		pdb.set_trace()
+				if partner.geo_ok:
+					name=partner.name
+				else:	
+					name="(*) " + partner.name
 				if partner.street:
 					name += ", " + partner.street
 				if partner.zip:

@@ -47,7 +47,7 @@ class hertsens_rit(models.Model):
 	invoice_id=fields.Many2one('account.invoice', ztrack_visibility='onchange')
 	destination_ids=fields.One2many('hertsens.destination','rit_id')
 	finished=fields.Boolean(help="Tick if ride is finished")
-	state=fields.Selection([('quoted','Quote'),('planned','Planned'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned', ztrack_visibility='onchange')
+	state=fields.Selection([('quoted','Quote'),('planned','Planned'),('predispatched','Pre Dispatched'),('dispatched','Dispatched'),('cancelled', 'Cancelled'),('completed','Completed'),('waiting','Waiting for info'),('toinvoice','To be invoiced'),('invoiced','Invoiced')], required=True, default='planned', ztrack_visibility='onchange')
 	on=fields.Char(required=True,default="on")
 	is_recurring=fields.Boolean(help="Tick if recurring", copy=False)
 	recurring_active=fields.Boolean(help="Is active?", copy=False)
@@ -64,6 +64,9 @@ class hertsens_rit(models.Model):
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
 	hist_ids=fields.One2many('hertsens.destination.hist','ride_id')
 	driver_id=fields.Many2one('hr.employee')
+	default_vehicle_id=fields.Many2one('fleet.vehicle', string="Voorzien voertuig", help="Voertuig voorzien voor deze rit")
+	time_load=fields.Char(string="Gevraagde laadtijd",  help="Informatief veld, hier gebeurt verder niets mee" )
+	time_unload=fields.Char(string="Gevraagde lostijd", help="Informatief veld, hier gebeurt verder niets mee" )
 #	origin_partner_id=fields.Many2one('res.partner', string="Origin")
 #	destination_partner_id=fields.Many2one('res.partner', string="Destination")
 	google_navigation_url=fields.Char(string='Google Nav', compute='_compute_google_navigation_url')
@@ -80,6 +83,13 @@ class hertsens_rit(models.Model):
 
 
 
+	@api.one
+	@api.onchange('default_vehicle_id')
+	def _checkstate_based_on_default_vehicle(self):
+		if self.default_vehicle_id:
+			self.state='predispatched'
+		else:
+			self.state='planned'
 
 
 	@api.one
@@ -266,6 +276,7 @@ class hertsens_rit(models.Model):
 					newdest=destination.copy({
 						'rit_id':new.id,
 						'vehicle_id':None,
+						'datum':new.datum,
 						})
 				if ride.recurring_interval != 1:
 					ride.recurring_next_date=time.strftime("%Y-%m-%d", (datetime.strptime(ride.recurring_next_date,"%Y-%m-%d") + timedelta(days=ride.recurring_interval)).timetuple())
@@ -371,6 +382,7 @@ class hertsens_rit(models.Model):
 #			'ride_ids': [(6, None, [self.id])],
 #			'name': self.name_get(),
 #			'vehicle_type_id': self.vehicle_type_id.id,
+			'vehicle_id':self.default_vehicle_id.id,
 			})
 		#for ride in self:
 		res=wiz._get_destinations(self)
@@ -411,7 +423,7 @@ class herstens_destination (models.Model):
 	transics_activity_id=fields.Many2one('transics.activity', string="Act" ,required=True, domain="[('id','in',valid_activity_ids[0][2])]", ondelete='restrict')
 	vehicle_id=fields.Many2one('fleet.vehicle', copy=False)
 	employee_id=fields.Many2one('hr.employee', string="Driver", copy=False)
-
+	datum=fields.Date(help="Datum dat deze operatie uitgevoerd moet worden, informatief veld")
 	state=fields.Selection([('planned','Planned'),('dispatched','Dispatched'),('received', 'Received'),('read', 'Read'),('cancelled', 'Cancelled'),('aborted', 'Aborted'),('progress','In progress'),('completed','Completed')], required=True, default='planned')
 	hist_ids=fields.One2many('hertsens.destination.hist','hertsens_destination_id')
 
