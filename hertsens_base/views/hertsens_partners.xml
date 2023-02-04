@@ -69,11 +69,16 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_res_partner_filter"/>
             <field name="arch" type="xml">
-                <filter name="supplier" position="after">  
-                    <filter string="Places" name="places" domain="[('type','=','place')]" help="Geo places"/>            
-                    <filter string="Geo OK" name="geo_ok" domain="['&amp;',('type','=','place'),('geo_ok','=',True)]" help="Place en Geo is ok"/>            
-                    <filter string="Geo nt OK" name="geo_nt_ok" domain="['&amp;',('type','=','place'),('geo_ok','!=',True)]" help="Place en Geo is niet ok"/>            
+                <filter name="customer" position="before">
+                    <filter string="Places" name="places" domain="[('type','=','place')]" help="Geo places"/>
                 </filter>
+                <field name="user_id" position="after">  
+                    <group string="Geo filters">
+                        <filter string="Geo OK" name="geo_ok" domain="[('geo_ok','=',True)]" help="Place en Geo is ok"/>            
+                        <filter string="Geo nt OK" name="geo_nt_ok" domain="[('geo_ok','!=',True)]" help="Place en Geo is niet ok"/>
+                        <separator/>
+                    </group>            
+                </field>
 
             </field>
         </record>        
