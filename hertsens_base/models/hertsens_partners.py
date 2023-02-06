@@ -65,7 +65,7 @@ class res_partner(models.Model):
 			self.geo_street=self.geo_name.split(',')[0].strip()
 			self.geo_zip=self.geo_name.split('(')[1].split(')')[0].strip()
 			self.geo_city=self.geo_name.partition(',')[2].split('(')[0].strip()
-			if self.street.upper()==self.geo_street.upper() and self.zip.upper()==self.geo_zip.upper() and self.geo_city.upper()==self.city.upper():
+			if (self.street and self.street.upper()==self.geo_street.upper()) and (self.zip and self.zip.upper()==self.geo_zip.upper()) and (self.city and self.geo_city.upper()==self.city.upper()):
 				self.geo_ok=True
 		else:
 			self.geo_ok=False
